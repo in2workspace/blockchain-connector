@@ -1,145 +1,287 @@
-# Introduction
-Blockchain Connector is one of the components used by the Access Node to interact between off-chain storage and on-chain
-storage. It is a RESTFul API that provides a set of endpoints to interact with the Context Broker and Blockchain.
+# Blockchain Connector
 
-It is built using Java 17, Spring Boot 3.x, and Gradle.
+## Introduction
+The Blockchain Connector serves as a crucial component within the Access Node architecture, facilitating interaction between off-chain storage and on-chain storage. This RESTful API exposes a set of endpoints designed for seamless communication between the Context Broker and Blockchain.
 
-## Main features:
-- Subscribe to new entities stored in the Context Broker.
-- Create Blockchain Events with the detailed data of the Context Broker Entity as attributes values.
-- Publish Blockchain Events to a configured Blockchain Node.
-- Query Blockchain Events to the Blockchain Node using Event Metadata as filters.
-- Retrieve Entity Data using the ‘data location’ attribute of the Blockchain Event.
-- Publish retrieved Entities to the configured Context Broker.
+#### Technologies
+The Blockchain Connector is constructed using the following technologies:
 
-# Components
+- Java 17: The core programming language for building the connector.
+- Spring Boot 3.x: A framework that simplifies the development of Java-based applications, providing a robust and efficient platform.
+- Gradle: A build automation tool that manages the project's dependencies and facilitates the build process.
 
-## OnChain Service
+## Functionalities
+The key functionalities of the Blockchain Connector include:
 
-[![](https://mermaid.ink/img/pako:eNqFUj1rwzAQ_StCUwsJhI4aAm3SKU1ccEYtinSpj8qSK58KIeS_V7Y8hNi4msS9j3sn3ZVrb4AL3sJPBKdhi-orqFo6lk6jAqHGRjlie6UrdDAGynhqdcCG0LsxWoRU_jAHT3hGrTrSxjsK3loIY3pCK4Xu3RHSpYTwi3qi5Zv1-lt3RHZI8eXQ9z4JW67X880Fu69nh1lBbzkVUDAdQBG8OvMZTxbbKsNHX2T203O2nxLPuG561zahLA-bcbY9Fv_4PTyQYEOuObMHDVt2RsOvC_ayWrFixxe8hlArNGllrp1OcqqgBslFuho4q2hJculuiaoi-fLiNBcUIix4bEyaZ9gwLs7KtqkKBsmHfV7Dfhtvfw_26eo?type=png)](https://mermaid.live/edit#pako:eNqFUj1rwzAQ_StCUwsJhI4aAm3SKU1ccEYtinSpj8qSK58KIeS_V7Y8hNi4msS9j3sn3ZVrb4AL3sJPBKdhi-orqFo6lk6jAqHGRjlie6UrdDAGynhqdcCG0LsxWoRU_jAHT3hGrTrSxjsK3loIY3pCK4Xu3RHSpYTwi3qi5Zv1-lt3RHZI8eXQ9z4JW67X880Fu69nh1lBbzkVUDAdQBG8OvMZTxbbKsNHX2T203O2nxLPuG561zahLA-bcbY9Fv_4PTyQYEOuObMHDVt2RsOvC_ayWrFixxe8hlArNGllrp1OcqqgBslFuho4q2hJculuiaoi-fLiNBcUIix4bEyaZ9gwLs7KtqkKBsmHfV7Dfhtvfw_26eo)
+- **Interaction with Context Broker:** The connector provides endpoints for fetching and updating data from the Context Broker, ensuring synchronization between off-chain and on-chain data.
 
-The Orion-LD Notification Service is a component of the Blockchain Connector system that handles notifications received from the Orion-LD system and processes them to create and publish on-chain entities. This README provides an overview of the service's components and functionality.
-Components
+- **Blockchain Operations:** Users can perform various blockchain operations, such as submitting transactions, retrieving transaction details, and monitoring blockchain events.
+- **Subscribe to New Entities:** Enables subscription to new entities stored in the Context Broker.
+- **Create Blockchain Events:** Generates Blockchain Events with detailed data from the Context Broker Entity as attribute values.
+- **Publish Blockchain Events:** Sends Blockchain Events to a configured Blockchain Node.
+- **Query Blockchain Events:** Allows querying Blockchain Events to the Blockchain Node using Event Metadata as filters.
+- **Retrieve Entity Data:** Retrieves Entity Data using the 'data location' attribute of the Blockchain Event.
+- **Publish Retrieved Entities:** Publishes retrieved Entities to the configured Context Broker.
 
-### 1. OrionLdNotificationController
-- This is a RESTful controller responsible for receiving notifications from the Orion-LD system.
-- It listens to POST requests at the "/notifications/orion-ld" endpoint.
-- When a POST request is received, it expects a JSON payload representing an `OrionLdNotificationDTO`.
-- The controller logs the received notification and then calls the `createAndPublishEntityToOnChain` method of the `OnChainEntityService` for further processing.
+## Installation
+### Prerequisites
+To install the blockchain connector, the following prerequisites are required:
+- Docker or Docker Desktop
 
-### 2. OnChainEntityServiceImpl
-- This service class implements the `OnChainEntityService` interface.
-- Its primary role is to process notifications and create and publish on-chain entities based on the received notifications.
-- Here are the main steps performed by this service:
-  - It receives an `OrionLdNotificationDTO` as input, representing a notification from the Orion-LD system.
-  - It processes the notification by creating an on-chain entity called `DomeEvent`.
-  - The `DomeEvent` is constructed based on data from the received notification.
-  - The service utilizes the `hashLinkService` to create a hash link for the data, ensuring data integrity and security.
-  - It publishes the `DomeEvent` to a blockchain node interface using HTTP requests.
-  - If the publication is successful (HTTP status code 200), it logs a success message. If not, it throws a `RequestErrorException`.
+### Image installation / Component setup
+
+#### Introduction
+
+For the installation of the component and its remaining dependencies, we will create a docker-compose file that allows us to configure containers from the images needed to install our entire environment. This setup ensures the proper functioning of the Blockchain Connector along with its dependencies, which will also be installed.
 
 
+#### Component Overview
 
-## Dependencies
+In the docker-compose.yml file, the definition of services is structured collectively under the services section, following the specified header in the document:
 
-- **hashLinkService**: This service is used to create hash links for data, ensuring data integrity and security.
+```yaml
+version: "3.8"
+services: 
+# Following components will be defined here
+```
 
-- **blockchainNodeIConfig**: Configuration for the blockchain node interface, including HTTP client setup.
+## `mkt1-blockchain-connector`
+- **Description:** The primary component responsible for connecting the Marketplace to the blockchain network.
+- **Image:** `in2kizuna/blockchain-connector:v1.0.0-SNAPSHOT`
+- **Environment Variables:**
+  - `DATABASE_URL`: R2DBC URL for the transaction database.
+  - `FLYWAY_URL`: Flyway migration URL for the transaction database.
+  - `ORGANIZATION_ID`: Identifier for the organization.
+- **Ports:** `8081:8080`
+- **Volumes:** Binds `./marketplace1-config.yml` to `/src/main/resources/external-config.yml`.
+- **Links:** Connected to `mkt1-broker-adapter`, `mkt1-dlt-adapter`, `mkt1-postgres`.
+- **Networks:** Connected to `local_network`.
 
-- **blockchainNodeProperties**: Configuration properties for the blockchain node, such as API endpoints and settings.
+**Docker Compose Configuration:**
+```yaml
+mkt1-blockchain-connector:
+  container_name: mkt1-blockchain-connector
+  image: in2kizuna/blockchain-connector:v1.0.0-SNAPSHOT
+  environment:
+    - "DATABASE_URL=r2dbc:postgresql://mkt1-postgres:5432/mkt1db"
+    - "FLYWAY_URL=jdbc:postgresql://mkt1-postgres:5432/mkt1db"
+    - "ORGANIZATION_ID=VATES-00869735"
+  ports:
+    - "8081:8080"
+  volumes:
+    - ./marketplace1-config.yml:/src/main/resources/external-config.yml
+  links:
+    - mkt1-broker-adapter
+    - mkt1-dlt-adapter
+    - mkt1-postgres
+  networks:
+    - local_network
+```
 
-## Offchain Service
+## `mkt1-dlt-adapter`
+- **Description:** Adapter component facilitating simplified operations with the DLT (Distributed Ledger Technology), in order to create a Blockchain node.
+- **Image:** `aleniet/dlt-adapter:1.1`
+- **Environment Variables:**
+  - `PRIVATE_KEY`: Private key for DLT interactions.
+- **Ports:** `8082:8080`
+- **Networks:** Connected to `local_network`.
+
+**Docker Compose Configuration:**
+```yaml
+mkt1-dlt-adapter:
+  container_name: mkt1-dlt-adapter
+  image: aleniet/dlt-adapter:1.1
+  environment:
+    - "PRIVATE_KEY=0xe2afef2c880b138d741995ba56936e389b0b5dd2943e21e4363cc70d81c89346"
+  ports:
+    - "8082:8080"
+  networks:
+    - local_network
+```
+
+## `mkt1-broker-adapter`
+- **Description:** Adapter component providing simplified interactions with the Context Broker.
+- **Image:** `in2kizuna/broker-adapter:v1.0.0-SNAPSHOT`
+- **Ports:** `8083:8080`
+- **Volumes:** Binds `./marketplace1-config.yml` to `/src/main/resources/external-config.yml`.
+- **Links:** Connected to `mkt1-context-broker`.
+- **Networks:** Connected to `local_network`.
+
+**Docker Compose Configuration:**
+```yaml
+mkt1-broker-adapter:
+  container_name: mkt1-broker-adapter
+  image: in2kizuna/broker-adapter:v1.0.0-SNAPSHOT
+  ports:
+    - "8083:8080"
+  volumes:
+    - ./marketplace1-config.yml:/src/main/resources/external-config.yml
+  links:
+    - mkt1-context-broker
+  networks:
+    - local_network
+```
+
+## `mkt1-context-broker`
+- **Description:** Manages context information, facilitating communication between components.
+- **Image:** `fiware/orion-ld:latest`
+- **Command:** Configured with MongoDB host and port.
+- **Ports:** `1027:1026`
+- **Links:** Connected to `mkt1-mongo`.
+- **Networks:** Connected to `local_network`.
+
+**Docker Compose Configuration:**
+```yaml
+mkt1-context-broker:
+  container_name: mkt1-context-broker
+  image: fiware/orion-ld:latest
+  restart: always
+  command: "-dbhost mkt1-mongo -port 1026"
+  ports:
+    - "1027:1026"
+  links:
+    - mkt1-mongo
+  networks:
+    - local_network
+```
+
+## `mkt1-mongo`
+- **Description:** NoSQL database for storing context information.
+- **Image:** `mongo:4.4`
+- **Command:** Disables journaling for improved performance.
+- **Volumes:** Mounts volumes for data and configuration.
+- **Networks:** Connected to `local_network`.
+
+**Docker Compose Configuration:**
+```yaml
+mkt1-mongo:
+  container_name: mkt1-mongo
+  image: mongo:4.4
+  command: "--nojournal"
+  volumes:
+    - mkt1_data:/data/db
+    - mkt1_db_config:/data/configdb
+  networks:
+    - local_network
+```
+
+## `mkt1-postgres`
+- **Description:** Relational database for recording and monitoring transactions, both on-chain and off-chain.
+- **Image:** `postgres:11`
+- **Ports:** `5433:5432`
+- **Environment Variables:**
+  - `POSTGRES_PASSWORD`: Password for PostgreSQL.
+  - `POSTGRES_USER`: PostgreSQL user.
+  - `POSTGRES_DB`: PostgreSQL database.
+- **Hostname:** `mkt1-postgres`
+- **Networks:** Connected to `local_network`.
+
+**Docker Compose Configuration:**
+```yaml
+mkt1-postgres:
+  container_name: mkt1-postgres
+  image: postgres:11
+  ports:
+    - "5433:5432"
+  environment:
+    - POSTGRES_PASSWORD=postgres
+    - POSTGRES_USER=postgres
+    - POSTGRES_DB=mkt1db
+  hostname: mkt1-postgres
+  networks:
+    - local_network
+```
 
 
 
-[![](https://mermaid.ink/img/pako:eNqNkz1vAjEMhv-KlRkk1DEDQ6FT-ajKmsXN-TirueTI-agQ4r834UOiwFVkiuLXr5_Ezl7ZUJDSqqVNR97SlHEdsTYe0mowCltu0AssIwc_nE3zZs3-XjBHW7Gn-8CrC_bbVsgeFqnYf4IcXwThki1KqjcJXmJwjuJ9VijLSc5588KyW1HcsqV-bnNGvqGB4Xj8FICGT7LEW4Lr-K1nf_6x0ENmDRN0Dv7c4KHwaHHTh4wlkSlxnbRQxlDDFAVhFq4h-y37qEKdHvLsy9Q-S6bho_ty3FYXIglXXXj-vbLneajyLdsm-AJ-WCp4GY1g-Z47arwaqJpijVykKd5nf6OkopqM0mlbUImdE6OMPyQpdhJWO2-VltjRQHVNgXIZeqVLdG06pYIlxPnpZxw_yOEXMOAeMg?type=png)](https://mermaid.live/edit#pako:eNqNkz1vAjEMhv-KlRkk1DEDQ6FT-ajKmsXN-TirueTI-agQ4r834UOiwFVkiuLXr5_Ezl7ZUJDSqqVNR97SlHEdsTYe0mowCltu0AssIwc_nE3zZs3-XjBHW7Gn-8CrC_bbVsgeFqnYf4IcXwThki1KqjcJXmJwjuJ9VijLSc5588KyW1HcsqV-bnNGvqGB4Xj8FICGT7LEW4Lr-K1nf_6x0ENmDRN0Dv7c4KHwaHHTh4wlkSlxnbRQxlDDFAVhFq4h-y37qEKdHvLsy9Q-S6bho_ty3FYXIglXXXj-vbLneajyLdsm-AJ-WCp4GY1g-Z47arwaqJpijVykKd5nf6OkopqM0mlbUImdE6OMPyQpdhJWO2-VltjRQHVNgXIZeqVLdG06pYIlxPnpZxw_yOEXMOAeMg)
-
-### 1. BlockchainNodeNotificationController
-- This RESTful controller receives notifications from the Blockchain Node.
-- It listens to POST requests at the "/notifications/blockchain-node" endpoint.
-- When a POST request is received, it expects a JSON payload representing a `BlockchainNodeNotificationDTO`.
-- The controller logs the received notification and then calls the `retrieveAndPublishEntityToOffChain` method of the `OffChainEntityService` for further processing.
-
-### 2. OffChainEntityServiceImpl
-- This service class implements the `OffChainEntityService` interface.
-- Its primary role is to process notifications received from the Blockchain Node and perform the necessary steps to publish entities to the Orion-LD system.
-- Here are the main steps performed by this service:
-  - It receives a `BlockchainNodeNotificationDTO` as input, representing a notification from the Blockchain Node.
-  - It retrieves the data location from the notification, which points to the entity to be published.
-  - The service verifies the entity's integrity and security by using the `hashLinkService` to resolve the hashlink associated with the data location.
-  - Once the entity is verified, it is published to the Orion-LD system using an HTTP POST request.
-  - If the publication is successful, the service logs a success message. If not, it throws a `RequestErrorException`.
-
-## Dependencies
-
-- **hashLinkService**: This service is used to create hash links for data, ensuring data integrity and security.
-
-- **applicationUtils**: Utility methods for making HTTP requests and handling responses.
-
-- **orionLdProperties**: Configuration properties for the Orion-LD system, such as API endpoints and settings.
-
-- **blockchainNodeIConfig**: Configuration for the blockchain node interface, including HTTP client setup and configuration.
-
-This OffChain Service plays a crucial role in ensuring that data is seamlessly transferred from the Blockchain Node to the Orion-LD system with data integrity and security.
 
 
+## Configuration
+In addition to the `docker-compose.yml` file, it is necessary to create a configuration file that includes, at a minimum, the following fields for proper functionality. The example configuration provided aligns with the previously defined components in the Docker Compose setup.
+
+**Example `marketplace1-config.yml`:**
+
+```yaml
+# DLT Adapter Configuration
+dlt-adapter:
+  domain: http://mkt1-dlt-adapter:8080
+```
+This section configures the DLT (Distributed Ledger Technology) Adapter, specifying the domain where the adapter can be accessed.
+
+```yaml
+# Blockchain Configuration
+blockchain:
+  rpcAddress: https://red-t.alastria.io/v0/9461d9f4292b41230527d57ee90652a6
+  userEthereumAddress: "0xb794f5ea0ba39494ce839613fffba74279579268"
+  subscription:
+    active: false
+    notificationEndpoint: http://mkt1-blockchain-connector:8080/notifications/dlt
+    eventTypes: >
+      ProductOffering
+```
+This section provides configuration details for the Blockchain component. It includes the RPC (Remote Procedure Call) address for blockchain interactions, the Ethereum address associated with the user, and subscription settings for receiving blockchain events. The subscription is currently inactive (`active: false`), but it specifies the notification endpoint and event types if activated.
+
+```yaml
+# Broker Adapter Configuration
+broker-adapter:
+  domain: http://mkt1-broker-adapter:8080
+  openapi:
+    url: http://localhost:8080
+```
+Here, the Broker Adapter is configured with its domain and an OpenAPI URL. The domain specifies where the adapter is accessible, and the OpenAPI URL indicates the location of the OpenAPI configuration.
+
+```yaml
+# Context Broker Configuration
+broker:
+  externalDomain: https://<example.com>/orion-ld
+  internalDomain: http://mkt1-context-broker:1026
+```
+This section configures the Context Broker with both external and internal domains. The external domain is where the Context Broker is accessible from outside, and the internal domain is its address within the environment.
+
+```yaml
+# NGSI Subscription Configuration
+ngsi-subscription:
+  notificationEndpoint: http://mkt1-blockchain-connector:8080/notifications/broker
+  entityTypes: >
+    ProductOffering
+```
+Lastly, the NGSI Subscription Configuration specifies the notification endpoint for NGSI (Next Generation Service Interface) subscriptions and the entity types for which subscriptions are activated. In this case, the example includes a subscription for the "ProductOffering" entity type.
+
+## Usage
+
+After implementing both the `docker-compose.yml` and configuration files, the next step is to compose the Docker services with the command:
+
+`docker-compose up -d`
+
+Subsequently, within Docker, wait for all components to initialize properly. Once everything has initialized successfully (in case of any issues, double-check the endpoint addresses in the configuration file), you can test its functionality by making POST, PATCH or DELETE entities to the Context Broker of the type to which it has subscribed.
+
+Users can utilize tools like POSTMAN for entity management, ensuring that the entity type matches the type established for subscription beforehand.
+
+If you wish to create a new instance serving to receive entities and publish them to the Context Broker within an offChain process, simply change the subscriptions to the DLT adapter to (`active: true`).
+
+Additionally, you can create multiple instances of the Blockchain Connector with variations in subscription types or DLT subscription activation. Repeat the same installation process mentioned above for each instance.
 
 
 
-# Getting Started
 
-## Prerequisites
-- [Java 17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
-- [Gradle](https://gradle.org/install/)
-- [Spring Boot](https://spring.io/projects/spring-boot/)
-- [MongoDB](https://www.mongodb.com/)
-- [Docker Desktop](https://www.docker.com/)
-- [Go](https://golang.org/)
-- [IntelliJ IDEA](https://www.jetbrains.com/idea/)
-- [Git](https://git-scm.com/)
-- [Azure DevOps](https://azure.microsoft.com/en-us/services/devops/)
-- [Orion-LD](https://github.com/FIWARE/context.Orion-LD/blob/develop/doc/manuals-ld/installation-guide-docker.md)
+## Contribution
 
-## Application profiles
-- <b>*Default*</b>: this profile is only used to execute test during the CI/CD pipeline.
-- <b>DEV</b>: this profile is used to execute the application in a Docker container.
-- <b>TEST</b>: this profile is used to execute the application in a pre-production environment.
-- <b>PROD</b>: this profile is used to execute the application in a production environment.
-
-## API references (DEV environment)
-- Swagger: http://localhost:8280/swagger-ui.html
-- OpenAPI: http://localhost:8280/api-docs
-
-## Installing
-- Clone Blockchain Connector project and Alastria Red T to your local machine.
-  ```git clone https://dev.azure.com/in2Dome/DOME/_git/in2-dome-blockchain_connector```
-  ```git clone https://dev.azure.com/in2Dome/DOME/_git/in2-test-alastria_red_t```
-- Open/Run Docker Desktop
-- Navigate to the root folder of the in2-test-alastria_red_t and execute the docker-compose. This will execute the Alastria Red T that consists in 6 local nodes (1 boot, 1 regular, and 4 validators).
-  ```cd in2-test-alastria_red_t```
-  ```docker-compose up -d```
-- Navigate to the root folder of the in2-dome-blockchain_connector and build the docker image. This will execute the Blockchain Connector Solution.
-  ```cd in2-dome-blockchain_connector```
-  ```docker build -t blk-conn .```
-- Navigate to the root folder of the in2-dome-blockchain_connector/docker and execute the docker-compose. This will execute the Blockchain Connector Solution, the Orion Context Broker, and the MongoDB linked to Context Broker
-  ```cd in2-dome-blockchain_connector/docker```
-  ```docker-compose up -d```
+## License
 
 
-## Orion-LD Documentation and Tools
-- [Orion-LD Context Broker GitHub Repository with Documentation](https://github.com/FIWARE/context.Orion-LD)
-- [Orion-LD Test Suite GitHub Repository](https://github.com/FIWARE/NGSI-LD_TestSuite/tree/master)
-- [Orion-LD Context Broker Swagger UI](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/-/raw/master/spec/updated/generated/full_api.json#/)
+## Project/Component Status
+This project is in version 1.0.0 of the MVP (Minimum Viable Product) for the Blockchain Connector at 12/04/2023.
 
-# License
-- [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+## Contact
+
+For any inquiries or further information, feel free to reach out to us:
+
+- **Email:** [info@in2.es](mailto:info@in2.es)
+- **Name:** IN2, Ingeniería de la Información
+- **Website:** [https://in2.es](https://in2.es)
+
+## Acknowledgments
 
 
-# Acknowledgments
-We extend heartfelt gratitude to [FIWARE Foundation](https://www.fiware.org/foundation/), DOME teams project, [Alastria](https://alastria.io/), and [DigitelTS](https://digitelts.es/) for their invaluable contributions to our project. Their support, expertise, and resources have been pivotal in shaping this solution, driving innovation, and overcoming challenges. Without their collaboration, this project would not have been possible. We are honored to have worked with such visionary and innovative partners, and we look forward to future collaborations and successes together. Thank you for being essential pillars in our journey.
-
-# Authors
-- [IN2](https://in2.es), [Oriol Canadés](mailto:oriol.canades@in2.es)
-
-# Document Version
-- v0.0.2
+## Creation Date and Last Update
+This project was created on July 07, 2023, and last updated on December 4, 2023.
