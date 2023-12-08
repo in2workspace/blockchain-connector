@@ -7,29 +7,30 @@ on:
     branches: [ "develop" ]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
     environment: test
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up JDK
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'adopt'
-        java-version: '17'
+      - uses: actions/checkout@v3
 
-    - name: Build the Docker image
-      run: |
-        ./gradlew printVersion # Print version before building
-        VERSION=$(./gradlew -q printVersion)
-        IMAGE_TAG="blockchain-connector:v$VERSION-SNAPSHOT"
-        docker build . --file Dockerfile --tag $IMAGE_TAG
-        echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-        docker push $IMAGE_TAG
-      env:
-        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'adopt'
+          java-version: '17'
 
+      - name: Make Gradlew Executable
+        run: chmod +x ./gradlew
+
+      - name: Build the Docker image
+        run: |
+          ./gradlew printVersion
+          VERSION=$(./gradlew -q printVersion)
+          IMAGE_TAG="blockchain-connector:v$VERSION-SNAPSHOT"
+          docker build . --file Dockerfile --tag $IMAGE_TAG
+          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+          docker push $IMAGE_TAG
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
