@@ -30,7 +30,7 @@ jobs:
           IMAGE_TAG="blockchain-connector:v$VERSION-SNAPSHOT"
           docker build . --file Dockerfile --tag $IMAGE_TAG
           echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-          docker push $IMAGE_TAG
+          docker push in2kizuna/$IMAGE_TAG
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
