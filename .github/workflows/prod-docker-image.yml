@@ -37,3 +37,13 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
           DOCKER_HUB_CLIENT_NAME: ${{ secrets.DOCKER_HUB_CLIENT_NAME }}
+
+      - name: Set build status
+        id: set_build_status
+        if: always()
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const status = process.env.BUILD_STATUS;
+            core.setOutput('build_status', status);
