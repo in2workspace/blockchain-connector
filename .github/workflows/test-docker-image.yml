@@ -1,4 +1,4 @@
-name: DockerHub Image CI
+name: DockerHub Image CI Test
 
 on:
   push:
