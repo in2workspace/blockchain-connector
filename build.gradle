@@ -9,7 +9,7 @@ plugins {
 }
 
 group = 'es.in2.dome'
-version = '1.0.0-SNAPSHOT'
+version = '1.1.0'
 
 java {
 	sourceCompatibility = '17'
@@ -118,5 +118,17 @@ tasks.jacocoTestReport {
 
 			])
 		}))
+	}
+}
+
+tasks.register('printVersion') {
+	doLast {
+		println version
+	}
+}
+
+tasks.register('printProjectName') {
+	doLast {
+		println rootProject.name
 	}
 }

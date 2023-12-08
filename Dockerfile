@@ -21,5 +21,5 @@ RUN addgroup -S nonroot \
     && adduser -S nonroot -G nonroot
 USER nonroot
 WORKDIR /app
-COPY --from=TEMP_BUILD /home/gradle/src/build/libs/*.jar /app/
-ENTRYPOINT ["java", "-jar", "/app/blockchain-connector-1.0.0-SNAPSHOT.jar"]
+COPY --from=TEMP_BUILD /home/gradle/src/build/libs/*.jar /app/blockchain-connector.jar
+ENTRYPOINT ["java", "-jar", "/app/blockchain-connector.jar"]
