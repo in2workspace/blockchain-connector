@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: DockerHub Image CI
 
 on:
   push:
@@ -11,6 +11,7 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    environment: test
 
     steps:
     - uses: actions/checkout@v3
