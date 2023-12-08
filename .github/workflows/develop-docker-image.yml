@@ -28,9 +28,10 @@ jobs:
           ./gradlew printVersion
           VERSION=$(./gradlew -q printVersion)
           IMAGE_TAG="blockchain-connector:v$VERSION-SNAPSHOT"
-          docker build . --file Dockerfile --tag $IMAGE_TAG
+          docker build . --file Dockerfile --tag $DOCKER_HUB_CLIENT_NAME/$IMAGE_TAG
           echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-          docker push in2kizuna/$IMAGE_TAG
+          docker push &DOCKER_HUB_CLIENT_NAME/$IMAGE_TAG
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          DOCKER_HUB_CLIENT_NAME: ${{ secrets.DOCKER_HUB_CLIENT_NAME }}
