@@ -38,6 +38,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Make Gradlew Executable
+        run: chmod +x ./gradlew
+
       - name: Build and Push docker image
         run: |
           ./gradlew printVersion
