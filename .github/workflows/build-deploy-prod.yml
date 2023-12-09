@@ -9,6 +9,7 @@ on:
 jobs:
 
   build:
+    name: build-project
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -30,6 +31,7 @@ jobs:
         run: ./gradlew build
 
   deploy:
+    name: deploy-project
     needs: build
     runs-on: ubuntu-latest
     environment: test
