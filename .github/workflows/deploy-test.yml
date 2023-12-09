@@ -47,46 +47,46 @@ jobs:
           DOCKER_HUB_CLIENT_NAME: ${{ secrets.DOCKER_HUB_CLIENT_NAME }}
           SUFFIX: -SNAPSHOT
 
-#      - name: Set deploy status on success
-#        id: set_deploy_status_success
-#        if: success()
-#        uses: actions/github-script@v6
-#        with:
-#          github-token: ${{ secrets.GITHUB_TOKEN }}
-#          script: |
-#            const { data } = await github.repos.createDeployment({
-#              owner: context.repo.owner,
-#              repo: context.repo.repo,
-#              ref: process.env.GITHUB_SHA,
-#              environment: 'test',
-#              auto_merge: false,
-#            });
-#
-#            await github.repos.createDeploymentStatus({
-#              owner: context.repo.owner,
-#              repo: context.repo.repo,
-#              deployment_id: data.id,
-#              state: 'success',
-#            });
-#
-#      - name: Set deploy status on failure
-#        id: set_deploy_status_failure
-#        if: failure()
-#        uses: actions/github-script@v6
-#        with:
-#          github-token: ${{ secrets.GITHUB_TOKEN }}
-#          script: |
-#            const { data } = await github.repos.createDeployment({
-#              owner: context.repo.owner,
-#              repo: context.repo.repo,
-#              ref: process.env.GITHUB_SHA,
-#              environment: 'test',
-#              auto_merge: false,
-#            });
-#
-#            await github.repos.createDeploymentStatus({
-#              owner: context.repo.owner,
-#              repo: context.repo.repo,
-#              deployment_id: data.id,
-#              state: 'failure',
-#            });
+      - name: Set deploy status on success
+        id: set_deploy_status_success
+        if: success()
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data } = await github.repos.createDeployment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: process.env.GITHUB_SHA,
+              environment: 'test',
+              auto_merge: false,
+            });
+
+            await github.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: data.id,
+              state: 'success',
+            });
+
+      - name: Set deploy status on failure
+        id: set_deploy_status_failure
+        if: failure()
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data } = await github.repos.createDeployment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: process.env.GITHUB_SHA,
+              environment: 'test',
+              auto_merge: false,
+            });
+
+            await github.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: data.id,
+              state: 'failure',
+            });
