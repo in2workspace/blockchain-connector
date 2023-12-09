@@ -8,9 +8,42 @@ on:
 
 jobs:
 
+  analyze:
+    name: analyze
+    runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
+    timeout-minutes: ${{ (matrix.language == 'swift' && 120) || 360 }}
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'java-kotlin' ]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: ${{ matrix.language }}
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v2
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        with:
+          category: "/language:${{matrix.language}}"
+
   build:
     name: build-project
+    if: success()
     runs-on: ubuntu-latest
+    environment: test
     strategy:
       matrix:
         java-version: [ '17' ]
@@ -37,10 +70,19 @@ jobs:
     if: success()
     runs-on: ubuntu-latest
     environment: test
+    strategy:
+      matrix:
+        java-version: [ '17' ]
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'adopt'
+          java-version: ${{ matrix.java-version }}
 
       - name: Make Gradlew Executable
         run: chmod +x ./gradlew
