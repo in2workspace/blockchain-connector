@@ -43,7 +43,7 @@ public class BrokerAdapterConfig {
                 .build();
         log.debug(" > Orion-LD Subscription: {}", brokerSubscriptionDTO.toString());
         try {
-            String orionLdInterfaceUrl = brokerAdapterProperties.domain() + brokerAdapterProperties.paths().subscribe();
+            String orionLdInterfaceUrl = brokerAdapterProperties.domain() + brokerAdapterProperties.paths().subscriptions();
             log.debug(" > Orion-LD Subscription URL: {}", orionLdInterfaceUrl);
             String requestBody = objectMapper.writer().writeValueAsString(brokerSubscriptionDTO);
             log.debug(" > Orion-LD Subscription request body: {}", requestBody);
@@ -58,7 +58,7 @@ public class BrokerAdapterConfig {
             // Send request asynchronously
             CompletableFuture<HttpResponse<String>> response = client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
             // Verify Response HttpStatus
-            if (response.get().statusCode() != 200) {
+            if (response.get().statusCode() != 201) {
                 throw new CommunicationException("Error creating default subscription");
             }
             log.info(" > Orion-LD Entities subscription created successfully.");

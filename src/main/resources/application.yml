@@ -61,3 +61,10 @@ springdoc:
 # Server Configuration
 server:
   port: 8080
+
+# Broker Adapter Configuration
+broker-adapter:
+  domain: http://broker-adapter:8080
+  paths:
+    entities:
+    subscriptions:

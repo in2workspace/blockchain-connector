@@ -34,9 +34,6 @@ blockchain:
     eventTypes: >
       ProductOffering
 
-# Broker Adapter Configuration
-broker-adapter:
-  domain: http://broker-adapter:8080
 
 # Context Broker Configuration
 broker:
