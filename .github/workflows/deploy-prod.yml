@@ -1,0 +1,90 @@
+name: "Deploy (Prod Environment)"
+
+on:
+  workflow_run:
+    workflows: [ "Build (Prod Environment)" ]
+    types:
+      - completed
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: test
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+
+      - name: Make Gradlew Executable
+        run: chmod +x ./gradlew
+
+      - name: Build the Docker image
+        run: |
+          ./gradlew printVersion
+          ./gradlew printProjectName
+          VERSION=$(./gradlew -q printVersion)
+          PROJECT_NAME=$(./gradlew -q printProjectName)
+          IMAGE_TAG="$PROJECT_NAME:v$VERSION"
+          docker build . --file Dockerfile --tag $DOCKER_HUB_CLIENT_NAME/$IMAGE_TAG
+          
+          # Error handling for Docker build
+          if ! docker build . --file Dockerfile --tag $DOCKER_HUB_CLIENT_NAME/$IMAGE_TAG; then
+            echo "Error building Docker image."
+            exit 1
+          fi
+          
+          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+          docker push $DOCKER_HUB_CLIENT_NAME/$IMAGE_TAG
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          DOCKER_HUB_CLIENT_NAME: ${{ secrets.DOCKER_HUB_CLIENT_NAME }}
+
+      - name: Set deploy status on success
+        id: set_deploy_status_success
+        if: always() && success()
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data } = await github.repos.createDeployment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: process.env.GITHUB_SHA,
+              environment: 'test',
+              auto_merge: false,
+            });
+            
+            await github.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: data.id,
+              state: 'success',
+            });
+
+      - name: Set deploy status on failure
+        id: set_deploy_status_failure
+        if: always() && failure()
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data } = await github.repos.createDeployment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: process.env.GITHUB_SHA,
+              environment: 'test',
+              auto_merge: false,
+            });
+            
+            await github.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: data.id,
+              state: 'failure',
+            });
