@@ -1,4 +1,4 @@
-name: "Build (Test Environment)"
+name: Build (Test Environment)
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: build
+    name: build-and-deploy
     runs-on: ubuntu-latest
     environment: test
 

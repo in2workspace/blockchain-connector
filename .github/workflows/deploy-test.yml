@@ -1,4 +1,4 @@
-name: "Deploy (Test Environment)"
+name: Deploy (Test Environment)
 
 on:
   workflow_run:
