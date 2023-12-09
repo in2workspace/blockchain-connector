@@ -8,7 +8,6 @@ on:
 
 jobs:
   build:
-    name: build-and-deploy
     runs-on: ubuntu-latest
     environment: test
 
@@ -24,26 +23,26 @@ jobs:
       - name: Make Gradlew Executable
         run: chmod +x ./gradlew
 
-      - name: Build
-        id: build
-        run: ./gradlew build
-
-      - name: Set success build status
-        id: set_success_build_status
-        if: ${{ success() }}
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const status = process.env.BUILD_STATUS || 'success';
-            core.setOutput('build_status', status);
-
-      - name: Set failure build status
-        id: set_failure_build_status
-        if: ${{ failure() }}
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const status = process.env.BUILD_STATUS || 'failure';
-            core.setOutput('build_status', status);
+#      - name: Build
+#        id: build
+#        run: ./gradlew build
+#
+#      - name: Set success build status
+#        id: set_success_build_status
+#        if: ${{ success() }}
+#        uses: actions/github-script@v6
+#        with:
+#          github-token: ${{ secrets.GITHUB_TOKEN }}
+#          script: |
+#            const status = process.env.BUILD_STATUS || 'success';
+#            core.setOutput('build_status', status);
+#
+#      - name: Set failure build status
+#        id: set_failure_build_status
+#        if: ${{ failure() }}
+#        uses: actions/github-script@v6
+#        with:
+#          github-token: ${{ secrets.GITHUB_TOKEN }}
+#          script: |
+#            const status = process.env.BUILD_STATUS || 'failure';
+#            core.setOutput('build_status', status);
