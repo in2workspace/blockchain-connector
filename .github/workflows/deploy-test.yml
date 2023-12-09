@@ -25,6 +25,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build the Docker image
+        if: success()
         run: |
           ./gradlew printVersion
           ./gradlew printProjectName
@@ -49,7 +50,7 @@ jobs:
 
       - name: Set deploy status on success
         id: set_deploy_status_success
-        if: always() && success()
+        if: success()
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -71,7 +72,7 @@ jobs:
 
       - name: Set deploy status on failure
         id: set_deploy_status_failure
-        if: always() && failure()
+        if: failure()
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
