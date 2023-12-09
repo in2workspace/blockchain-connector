@@ -29,7 +29,7 @@ jobs:
         run: ./gradlew build
 
       - name: Set success build status
-        id: set_build_status
+        id: set_success_build_status
         if: ${{ success() }}
         uses: actions/github-script@v6
         with:
@@ -39,7 +39,7 @@ jobs:
             core.setOutput('build_status', status);
 
       - name: Set failure build status
-        id: set_build_status
+        id: set_failure_build_status
         if: ${{ failure() }}
         uses: actions/github-script@v6
         with:
