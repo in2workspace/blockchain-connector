@@ -44,7 +44,7 @@ jobs:
           ./gradlew printProjectName
           VERSION=$(./gradlew -q printVersion)
           PROJECT_NAME=$(./gradlew -q printProjectName)
-          IMAGE_TAG="$PROJECT_NAME:v$VERSION$SUFFIX"
+          IMAGE_TAG="$PROJECT_NAME:v$VERSION"
           docker build . --file Dockerfile --tag $DOCKER_HUB_CLIENT_NAME/$IMAGE_TAG
           echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
           docker push $DOCKER_HUB_CLIENT_NAME/$IMAGE_TAG
@@ -52,4 +52,3 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
           DOCKER_HUB_CLIENT_NAME: ${{ secrets.DOCKER_HUB_CLIENT_NAME }}
-          SUFFIX: -SNAPSHOT
