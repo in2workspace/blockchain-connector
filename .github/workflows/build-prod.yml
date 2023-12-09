@@ -44,4 +44,4 @@ jobs:
             else
               echo "Error: GITHUB_TOKEN or GITHUB_REPOSITORY is not set."
             fi
-          fi
+          }
