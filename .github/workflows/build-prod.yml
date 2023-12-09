@@ -1,6 +1,8 @@
 name: "Build (Prod Environment)"
 
 on:
+  push:
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
@@ -21,17 +23,13 @@ jobs:
       - name: Make Gradlew Executable
         run: chmod +x ./gradlew
 
-      - name: Set build status
-        id: set_build_status
-        if: always()
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const status = process.env.BUILD_STATUS;
-            core.setOutput('build_status', status);
+      - name: Set build status and create deployment
+        run: |
+          const status = process.env.BUILD_STATUS;
+          core.setOutput('build_status', status);
 
-            if (status !== 'success') {
+          if (status !== 'success') {
+            if (github && context.repo) {
               const { data } = await github.repos.createDeployment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -39,11 +37,16 @@ jobs:
                 environment: 'test',
                 auto_merge: false,
               });
-            
+
               await github.repos.createDeploymentStatus({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 deployment_id: data.id,
                 state: 'failure',
               });
+            } else {
+              console.error('Error: github or context.repo is undefined.');
             }
+          }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

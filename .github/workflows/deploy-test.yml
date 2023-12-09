@@ -68,30 +68,24 @@ jobs:
               state: 'success',
             });
 
-      - name: Set build status and create deployment
-        run: |
-          const status = process.env.BUILD_STATUS;
-          core.setOutput('build_status', status);
-
-          if (status !== 'success') {
-            if (github && context.repo) {
-              const { data } = await github.repos.createDeployment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: process.env.GITHUB_SHA,
-                environment: 'test',
-                auto_merge: false,
-              });
-
-              await github.repos.createDeploymentStatus({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                deployment_id: data.id,
-                state: 'failure',
-              });
-            } else {
-              console.error('Error: github or context.repo is undefined.');
-            }
-          }
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set deploy status on failure
+        id: set_deploy_status_failure
+        if: always() && failure()
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data } = await github.repos.createDeployment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: process.env.GITHUB_SHA,
+              environment: 'test',
+              auto_merge: false,
+            });
+            
+            await github.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: data.id,
+              state: 'failure',
+            });
