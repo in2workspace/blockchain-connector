@@ -8,7 +8,7 @@ plugins {
 	id 'org.owasp.dependencycheck' version '8.4.0'
 }
 
-group = 'es.in2.dome'
+group = 'es.in2'
 version = '1.1.0'
 
 java {
