@@ -1,8 +1,6 @@
 name: "Analyze Java Code with CodeQL"
 
 on:
-  pull_request:
-    branches: [ "main", "develop" ]
   schedule:
     - cron: '00 12 * * 0'
 
