@@ -3,7 +3,7 @@ package es.in2.blockchainconnector.configuration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import es.in2.blockchainconnector.configuration.properties.BrokerAdapterProperties;
 import es.in2.blockchainconnector.configuration.properties.NgsiLdSubscriptionConfigProperties;
-import es.in2.blockchainconnector.domain.BrokerSubscriptionDTO;
+import es.in2.blockchainconnector.domain.BrokerSubscriptionRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -34,19 +34,20 @@ public class BrokerAdapterConfig {
     @Bean
     @Profile("default")
     public void setBrokerSubscription() {
-        log.info(">>> Setting Orion-LD Entities subscription...");
-        BrokerSubscriptionDTO brokerSubscriptionDTO = BrokerSubscriptionDTO.builder()
+        String processId = UUID.randomUUID().toString();
+        log.info("ProcessID: {} - Setting Orion-LD Entities subscription...", processId);
+        BrokerSubscriptionRequest brokerSubscriptionRequest = BrokerSubscriptionRequest.builder()
                 .id("urn:ngsi-ld:Subscription:" + UUID.randomUUID())
                 .type("Subscription")
                 .notificationEndpointUri(subscriptionConfiguration.notificationEndpoint())
                 .entities(subscriptionConfiguration.entityTypes())
                 .build();
-        log.debug(" > Orion-LD Subscription: {}", brokerSubscriptionDTO.toString());
+        log.debug("ProcessID: {} - Broker Subscription: {}", processId, brokerSubscriptionRequest.toString());
         try {
             String orionLdInterfaceUrl = brokerAdapterProperties.domain() + brokerAdapterProperties.paths().subscriptions();
-            log.debug(" > Orion-LD Subscription URL: {}", orionLdInterfaceUrl);
-            String requestBody = objectMapper.writer().writeValueAsString(brokerSubscriptionDTO);
-            log.debug(" > Orion-LD Subscription request body: {}", requestBody);
+            log.debug("ProcessID: {} - Broker Subscription URL: {}", processId, orionLdInterfaceUrl);
+            String requestBody = objectMapper.writer().writeValueAsString(brokerSubscriptionRequest);
+            log.debug("ProcessID: {} - Broker Subscription request body: {}", processId, requestBody);
             // Create request
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
@@ -61,9 +62,9 @@ public class BrokerAdapterConfig {
             if (response.get().statusCode() != 201) {
                 throw new CommunicationException("Error creating default subscription");
             }
-            log.info(" > Orion-LD Entities subscription created successfully.");
+            log.info("ProcessID: {} - Broker Entities subscription created successfully.", processId);
         } catch (CommunicationException | InterruptedException | IOException | ExecutionException e) {
-            log.error("Error creating default subscription", e);
+            log.error("ProcessID: {} - Error creating default subscription", processId, e);
             Thread.currentThread().interrupt();
         }
     }

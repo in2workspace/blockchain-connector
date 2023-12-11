@@ -6,8 +6,8 @@ spring:
     web-application-type: reactive
   r2dbc:
     url:
-    username: postgres
-    password: postgres
+    username:
+    password:
     generate-unique-name: true
   flyway:
     url:
