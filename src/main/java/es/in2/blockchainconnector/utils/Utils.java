@@ -65,7 +65,6 @@ public class Utils {
         return result;
     }
 
-
     public static String postRequest(String url, String requestBody) {
         // Create request
         HttpClient client = HttpClient.newHttpClient();
