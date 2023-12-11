@@ -17,7 +17,7 @@ public record DLTAdapterProperties(String domain, @NestedConfigurationProperty D
 
     @ConstructorBinding
     public DLTAdapterProperties(String domain, DLTAdapterPathProperties paths) {
-        this.domain = domain;
+        this.domain = Optional.ofNullable(domain).orElse("http://localhost:8080");
         this.paths = Optional.ofNullable(paths).orElse(new DLTAdapterPathProperties(null, null, null));
     }
 

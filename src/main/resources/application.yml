@@ -4,17 +4,13 @@ spring:
     name: Blockchain Connector
   main:
     web-application-type: reactive
-  config:
-    import:
-      - classpath:external-config.yml
-      - file:/src/main/resources/external-config.yml
   r2dbc:
-    url: ${DATABASE_URL}
-    username: postgres #user
-    password: postgres #1234
+    url:
+    username: postgres
+    password: postgres
     generate-unique-name: true
   flyway:
-    url: ${FLYWAY_URL}
+    url:
     locations: classpath:db/migrations
 
 # Spring Logging Configuration
@@ -62,9 +58,54 @@ springdoc:
 server:
   port: 8080
 
+# Application Configuration
+openapi:
+  server:
+    url:
+    description:
+  info:
+    title:
+    version:
+    description:
+    termsOfService:
+    license:
+      name:
+      url:
+    contact:
+      email:
+      name:
+      url:
+
+# Operator Configuration
+operator:
+  organizationId:
+
+# DLT Adapter Configuration
+dlt-adapter:
+  domain:
+
+# Blockchain Configuration
+blockchain:
+  rpcAddress:
+  userEthereumAddress:
+  subscription:
+    active:
+    notificationEndpoint:
+    eventTypes:
+
+# Context Broker Configuration
+broker:
+  externalDomain:
+  internalDomain:
+
+# NGSI Subscription Configuration
+ngsi-subscription:
+  notificationEndpoint:
+  entityTypes:
+
 # Broker Adapter Configuration
 broker-adapter:
-  domain: http://broker-adapter:8080
+  domain:
   paths:
     entities:
     subscriptions:
