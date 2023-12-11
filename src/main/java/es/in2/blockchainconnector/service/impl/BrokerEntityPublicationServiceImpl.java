@@ -90,7 +90,7 @@ public class BrokerEntityPublicationServiceImpl implements BrokerEntityPublicati
                 .skip(1)
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
-        int responseCode = deleteRequest(brokerAdapterProperties.domain() + brokerAdapterProperties.paths().delete()
+        int responseCode = deleteRequest(brokerAdapterProperties.domain() + brokerAdapterProperties.paths().entities()
                 + "/" + sourceBrokerEntityID).thenApply(HttpResponse::statusCode).join();
         if (responseCode == 204) {
             log.debug("Entity deleted successfully");
@@ -148,7 +148,7 @@ public class BrokerEntityPublicationServiceImpl implements BrokerEntityPublicati
 
     private Mono<Void> updateEntityToBroker(String processId, String brokerEntity, DLTNotificationDTO dltNotificationDTO) throws NoSuchAlgorithmException {
         // Update the entity to the broker
-        String brokerUpdateEntitiesUrl = brokerAdapterProperties.domain() + brokerAdapterProperties.paths().update();
+        String brokerUpdateEntitiesUrl = brokerAdapterProperties.domain() + brokerAdapterProperties.paths().entities();
         log.debug(" > Updating entity to {}", brokerUpdateEntitiesUrl);
         Transaction transaction = Transaction.builder()
                 .id(UUID.randomUUID())

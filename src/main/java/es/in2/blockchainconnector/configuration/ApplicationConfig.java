@@ -17,7 +17,6 @@ public class ApplicationConfig {
 
     private final OperatorProperties operatorProperties;
 
-
     @Bean
     public String organizationIdHash() {
         try {
@@ -26,6 +25,5 @@ public class ApplicationConfig {
             throw new HashCreationException("Error creating organizationId hash: " + e.getMessage());
         }
     }
-
 
 }

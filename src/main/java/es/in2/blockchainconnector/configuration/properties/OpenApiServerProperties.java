@@ -1,17 +1,21 @@
 package es.in2.blockchainconnector.configuration.properties;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.bind.ConstructorBinding;
 
-import static es.in2.blockchainconnector.utils.Utils.isNullOrBlank;
+import java.util.Optional;
 
-@Slf4j
+/**
+ * OpenApiInfoLicenseProperties
+ *
+ * @param url - server url
+ * @param description
+ */
 public record OpenApiServerProperties(String url, String description) {
 
     @ConstructorBinding
     public OpenApiServerProperties(String url, String description) {
-        this.url = isNullOrBlank(url) ? "https://localhost:8080" : url;
-        this.description = isNullOrBlank(description) ? "<server description>" : description;
+        this.url = Optional.ofNullable(url).orElse("http://localhost:8080");
+        this.description = Optional.ofNullable(description).orElse("Wallet User Registry Local Server");
     }
 
 }

@@ -2,15 +2,22 @@ package es.in2.blockchainconnector.configuration.properties;
 
 import org.springframework.boot.context.properties.bind.ConstructorBinding;
 
-import static es.in2.blockchainconnector.utils.Utils.isNullOrBlank;
+import java.util.Optional;
 
+/**
+ * OpenApiInfoContactProperties
+ *
+ * @param email - contact email
+ * @param name - contact name
+ * @param url - organization url
+ */
 public record OpenApiInfoContactProperties(String email, String name, String url) {
 
     @ConstructorBinding
     public OpenApiInfoContactProperties(String email, String name, String url) {
-        this.email = isNullOrBlank(email) ? "<email of your company>" : email;
-        this.name = isNullOrBlank(name) ? "<name of your company>" : name;
-        this.url = isNullOrBlank(url) ? "<url of your company>" : url;
+        this.email = Optional.ofNullable(email).orElse("info@example.es");
+        this.name = Optional.ofNullable(name).orElse("John Doe");
+        this.url = Optional.ofNullable(url).orElse("https://example.es");
     }
 
 }
