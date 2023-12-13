@@ -26,53 +26,95 @@ public class BrokerAdapterNotificationServiceImpl implements BrokerAdapterNotifi
     private final TransactionService transactionService;
 
     @Override
-    public Mono<OnChainEventDTO> processNotification(BrokerNotificationDTO brokerNotificationDTO) {
+    public Mono<OnChainEventDTO> processNotification(ScorpioNotification scorpioNotification) {
+        if (scorpioNotification == null || scorpioNotification.data().isEmpty()) {
+            return Mono.error(new IllegalArgumentException("Invalid BrokerNotificationDTO"));
+        }
+
+        Map<String, Object> dataMap = scorpioNotification.data().get(0);
+        if (dataMap == null || dataMap.get("id") == null) {
+            return Mono.error(new IllegalArgumentException("Invalid dataMap in BrokerNotificationDTO"));
+        }
+
         String processId = MDC.get("processId");
-        return Mono.fromCallable(() -> {
+        String id = dataMap.get("id").toString();
+        if (dataMap.containsKey("deletedAt")) {
+            Mono<Transaction> eventTypeMono = transactionService.getTransaction(id);
+            return eventTypeMono
+                    .doOnNext(transaction -> log.debug("ProcessID: {} - Transaction: {}", processId, transaction))
+                    .flatMap(previousEntityTransaction -> {
+                        String dataToPersist;
+                        try {
+                            dataToPersist = objectMapper.writeValueAsString(dataMap);
+                        } catch (JsonProcessingException e) {
+                            log.error("ProcessID: {} - Error processing JSON: {}", processId, e.getMessage());
+                            return Mono.error(new BrokerNotificationParserException("Error processing JSON", e));
+                        }
+
+                        OnChainEventDTO onChainEventDTO = OnChainEventDTO.builder()
+                                .id(id)
+                                .eventType(previousEntityTransaction.getEntityType())
+                                .dataMap(dataMap)
+                                .data(dataToPersist)
+                                .build();
+
+                        Transaction transaction = Transaction.builder()
+                                .id(UUID.randomUUID())
+                                .transactionId(processId)
+                                .createdAt(Timestamp.from(Instant.now()))
+                                .dataLocation("")
+                                .entityId(id)
+                                .entityType(previousEntityTransaction.getEntityType())
+                                .entityHash("")
+                                .status(TransactionStatus.RECEIVED)
+                                .trader(TransactionTrader.PRODUCER)
+                                .hash("")
+                                .newTransaction(true)
+                                .build();
+
+                        return transactionService.saveTransaction(transaction)
+                                .thenReturn(onChainEventDTO);
+                    });
+        } else {
+            String dataToPersist;
             try {
-                // Validate input
-                if (brokerNotificationDTO == null || brokerNotificationDTO.data().isEmpty()) {
-                    throw new IllegalArgumentException("Invalid BrokerNotificationDTO");
-                }
-                // Get and process notification data
-                Map<String, Object> dataMap = brokerNotificationDTO.data().get(0);
-                validateDataMap(dataMap);
-                // Build OnChainEventDTO
-                String id = dataMap.get("id").toString();
-                String eventType = dataMap.get("type").toString();
-                String dataToPersist = objectMapper.writeValueAsString(dataMap);
-                OnChainEventDTO onChainEventDTO = OnChainEventDTO.builder()
-                        .id(id)
-                        .eventType(eventType)
-                        .dataMap(dataMap)
-                        .data(dataToPersist)
-                        .build();
-                // Build and save Transaction
-                Transaction transaction = Transaction.builder()
-                        .id(UUID.randomUUID())
-                        .transactionId(processId)
-                        .createdAt(Timestamp.from(Instant.now()))
-                        .dataLocation("")
-                        .entityId(id)
-                        .entityHash("")
-                        .status(TransactionStatus.RECEIVED)
-                        .trader(TransactionTrader.PRODUCER)
-                        .hash("")
-                        .newTransaction(true)
-                        .build();
-                return transactionService.saveTransaction(transaction)
-                        // Return the OnChainEventDTO after the transaction is saved
-                        .thenReturn(onChainEventDTO);
+                dataToPersist = objectMapper.writeValueAsString(dataMap);
             } catch (JsonProcessingException e) {
-                // Log error and rethrow
                 log.error("ProcessID: {} - Error processing JSON: {}", processId, e.getMessage());
-                throw new BrokerNotificationParserException("Error processing JSON", e.getCause());
+                return Mono.error(new BrokerNotificationParserException("Error processing JSON", e));
             }
-        }).flatMap(mono -> mono); // Unwrap the Mono<OnChainEventDTO> from Mono<Mono<OnChainEventDTO>>
+
+            OnChainEventDTO onChainEventDTO = OnChainEventDTO.builder()
+                    .id(id)
+                    .eventType(dataMap.get("type").toString())
+                    .dataMap(dataMap)
+                    .data(dataToPersist)
+                    .build();
+
+            Transaction transaction = Transaction.builder()
+                    .id(UUID.randomUUID())
+                    .transactionId(processId)
+                    .createdAt(Timestamp.from(Instant.now()))
+                    .dataLocation("")
+                    .entityId(id)
+                    .entityType(dataMap.get("type").toString())
+                    .entityHash("")
+                    .status(TransactionStatus.RECEIVED)
+                    .trader(TransactionTrader.PRODUCER)
+                    .hash("")
+                    .newTransaction(true)
+                    .build();
+
+            return transactionService.saveTransaction(transaction)
+                    .thenReturn(onChainEventDTO);
+        }
+
     }
 
+
+
     private void validateDataMap(Map<String, Object> dataMap) {
-        if (dataMap == null || dataMap.get("id") == null || dataMap.get("type") == null) {
+        if (dataMap == null || dataMap.get("id") == null) {
             throw new IllegalArgumentException("Invalid dataMap in BrokerNotificationDTO");
         }
     }

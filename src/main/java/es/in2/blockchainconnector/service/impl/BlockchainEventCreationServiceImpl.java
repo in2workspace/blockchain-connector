@@ -2,9 +2,7 @@ package es.in2.blockchainconnector.service.impl;
 
 import es.in2.blockchainconnector.configuration.ApplicationConfig;
 import es.in2.blockchainconnector.configuration.properties.BrokerProperties;
-import es.in2.blockchainconnector.configuration.properties.OperatorProperties;
 import es.in2.blockchainconnector.domain.*;
-import es.in2.blockchainconnector.exception.BrokerNotificationParserException;
 import es.in2.blockchainconnector.exception.HashCreationException;
 import es.in2.blockchainconnector.exception.HashLinkException;
 import es.in2.blockchainconnector.service.BlockchainEventCreationService;
@@ -32,7 +30,6 @@ import static es.in2.blockchainconnector.utils.Utils.getRequest;
 @RequiredArgsConstructor
 public class BlockchainEventCreationServiceImpl implements BlockchainEventCreationService {
 
-    private final OperatorProperties operatorProperties;
     private final BrokerProperties brokerProperties;
     private final TransactionService transactionService;
     private final ApplicationConfig applicationConfig;
@@ -43,16 +40,9 @@ public class BlockchainEventCreationServiceImpl implements BlockchainEventCreati
             log.info("ProcessID: {} - Processing OnChainEventDTO: {}", processId, onChainEventDTO);
             try {
                 log.debug("ProcessID: {} - Creating blockchain event...", processId);
-                String entityHashed;
-                if (onChainEventDTO.dataMap().containsKey("deletedAt")) {
-                    // Calculate SHA-256 hash from origin data
-                    entityHashed = Utils.calculateSHA256Hash(getRequest
-                            (brokerProperties.internalDomain() + brokerProperties.paths().entities() + "/" + onChainEventDTO.id())
-                            .thenApply(HttpResponse::body).join());
-                } else {
-                    // Calculate SHA-256 hash from the data
-                    entityHashed = Utils.calculateSHA256Hash(onChainEventDTO.data());
-                }
+                String entityHashed = Utils.calculateSHA256Hash(getRequest
+                        (brokerProperties.internalDomain() + brokerProperties.paths().entities() + "/" + onChainEventDTO.id())
+                        .thenApply(HttpResponse::body).join());
                 // Build dynamic URL by Broker Entity Use Case
                 String brokerEntityUrl = brokerProperties.internalDomain() + brokerProperties.paths().entities();
                 // Create DataLocation parameter (Hashlink)
@@ -81,6 +71,7 @@ public class BlockchainEventCreationServiceImpl implements BlockchainEventCreati
                         .createdAt(Timestamp.from(Instant.now()))
                         .dataLocation(onChainEvent.dataLocation())
                         .entityId(onChainEventDTO.id())
+                        .entityType(onChainEvent.eventType())
                         .entityHash(Utils.calculateSHA256Hash(onChainEventDTO.data()))
                         .status(TransactionStatus.CREATED)
                         .trader(TransactionTrader.PRODUCER)

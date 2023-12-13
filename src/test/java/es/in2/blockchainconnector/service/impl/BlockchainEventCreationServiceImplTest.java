@@ -3,7 +3,6 @@ package es.in2.blockchainconnector.service.impl;
 import es.in2.blockchainconnector.configuration.ApplicationConfig;
 import es.in2.blockchainconnector.configuration.properties.BrokerPathProperties;
 import es.in2.blockchainconnector.configuration.properties.BrokerProperties;
-import es.in2.blockchainconnector.configuration.properties.OperatorProperties;
 import es.in2.blockchainconnector.domain.OnChainEvent;
 import es.in2.blockchainconnector.domain.OnChainEventDTO;
 import es.in2.blockchainconnector.service.TransactionService;
@@ -14,7 +13,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import reactor.core.publisher.Mono;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -34,14 +32,13 @@ class BlockchainEventCreationServiceImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        OperatorProperties operatorProperties = new OperatorProperties("VATES-878958");
         BrokerProperties brokerProperties = new BrokerProperties("http://localhost:1026", "http://localhost:1026", new BrokerPathProperties("/v2", "/entities"));
-        service = new BlockchainEventCreationServiceImpl(operatorProperties, brokerProperties, transactionService, applicationConfig);
+        service = new BlockchainEventCreationServiceImpl(brokerProperties, transactionService, applicationConfig);
 
     }
 
     @Test
-    void createBlockchainEventTransaction() throws NoSuchAlgorithmException {
+    void createBlockchainEventTransaction() {
         // Arrange
 
         String processId = "testProcessId";
