@@ -1,7 +1,6 @@
 package es.in2.blockchainconnector.facade.impl;
 
-import es.in2.blockchainconnector.domain.OrionLDNotification;
-import es.in2.blockchainconnector.domain.ScorpioNotification;
+import es.in2.blockchainconnector.domain.BrokerNotification;
 import es.in2.blockchainconnector.facade.BlockchainCreationAndPublicationServiceFacade;
 import es.in2.blockchainconnector.service.BlockchainEventCreationService;
 import es.in2.blockchainconnector.service.BlockchainEventPublicationService;
@@ -22,9 +21,9 @@ public class BlockchainCreationAndPublicationServiceFacadeImpl implements Blockc
     private final BlockchainEventPublicationService blockchainEventPublicationService;
 
     @Override
-    public Mono<Void> createAndPublishABlockchainEventIntoBlockchainNode(ScorpioNotification scorpioNotification) {
+    public Mono<Void> createAndPublishABlockchainEventIntoBlockchainNode(BrokerNotification brokerNotification) {
         String processId = MDC.get("processId");
-        return brokerAdapterNotificationService.processNotification(scorpioNotification)
+        return brokerAdapterNotificationService.processNotification(brokerNotification)
                 .doOnSuccess(voidValue -> log.info("ProcessID: {} - Broker Notification processed successfully", processId))
                 .flatMap(onchainEventDTO -> blockchainEventCreationService.createBlockchainEvent(processId, onchainEventDTO))
                 .doOnSuccess(voidValue -> log.info("ProcessID: {} - Blockchain Event created successfully", processId))

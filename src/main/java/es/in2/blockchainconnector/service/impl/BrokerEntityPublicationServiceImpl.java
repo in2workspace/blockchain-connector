@@ -109,7 +109,7 @@ public class BrokerEntityPublicationServiceImpl implements BrokerEntityPublicati
             JsonNode jsonNode = objectMapper.readTree(entity);
             return jsonNode.get("id").asText();
         } catch (Exception e) {
-            throw new JsonReadingException("Error while extracting data from entity");
+            throw new JsonReadingException("Error while extracting id from entity");
         }
     }
 
@@ -118,7 +118,7 @@ public class BrokerEntityPublicationServiceImpl implements BrokerEntityPublicati
             JsonNode jsonNode = objectMapper.readTree(entity);
             return jsonNode.get("detail").asText();
         } catch (Exception e) {
-            throw new JsonReadingException("Error while extracting data from entity");
+            throw new JsonReadingException("Error while extracting id from deleted entity");
         }
     }
 

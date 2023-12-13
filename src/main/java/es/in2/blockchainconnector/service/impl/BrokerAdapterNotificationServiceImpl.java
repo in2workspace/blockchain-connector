@@ -26,12 +26,12 @@ public class BrokerAdapterNotificationServiceImpl implements BrokerAdapterNotifi
     private final TransactionService transactionService;
 
     @Override
-    public Mono<OnChainEventDTO> processNotification(ScorpioNotification scorpioNotification) {
-        if (scorpioNotification == null || scorpioNotification.data().isEmpty()) {
+    public Mono<OnChainEventDTO> processNotification(BrokerNotification brokerNotification) {
+        if (brokerNotification == null || brokerNotification.data().isEmpty()) {
             return Mono.error(new IllegalArgumentException("Invalid BrokerNotificationDTO"));
         }
 
-        Map<String, Object> dataMap = scorpioNotification.data().get(0);
+        Map<String, Object> dataMap = brokerNotification.data().get(0);
         if (dataMap == null || dataMap.get("id") == null) {
             return Mono.error(new IllegalArgumentException("Invalid dataMap in BrokerNotificationDTO"));
         }

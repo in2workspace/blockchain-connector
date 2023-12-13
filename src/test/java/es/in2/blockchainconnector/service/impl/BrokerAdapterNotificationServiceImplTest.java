@@ -41,7 +41,7 @@ class BrokerAdapterNotificationServiceImplTest {
        validDataMap.put("id", "id_value");
        validDataMap.put("type", "type_value");
 
-       ScorpioNotification orionLDNotification = new ScorpioNotification(
+       BrokerNotification orionLDNotification = new BrokerNotification(
                "id_value",
                 "type_value",
                Collections.singletonList(validDataMap),
