@@ -1,12 +1,10 @@
 package es.in2.blockchainconnector.service.impl;
 
 import es.in2.blockchainconnector.domain.DLTNotificationDTO;
-import io.micrometer.observation.Observation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
-import reactor.core.publisher.Mono;
 
 import java.security.NoSuchAlgorithmException;
 

@@ -1,6 +1,5 @@
 package es.in2.blockchainconnector.controller;
 
-import es.in2.blockchainconnector.domain.OrionLDNotification;
 import es.in2.blockchainconnector.domain.BrokerNotification;
 import es.in2.blockchainconnector.facade.BlockchainCreationAndPublicationServiceFacade;
 import lombok.RequiredArgsConstructor;

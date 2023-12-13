@@ -12,9 +12,10 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import reactor.core.publisher.Mono;
 
-import java.util.*;
-
-import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 class BrokerAdapterNotificationServiceImplTest {
 
