@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
+import static es.in2.blockchainconnector.utils.HttpUtils.*;
 import static es.in2.blockchainconnector.utils.Utils.*;
 
 @Slf4j
@@ -79,7 +80,7 @@ public class BrokerEntityPublicationServiceImpl implements BrokerEntityPublicati
                 .transactionId(processId)
                 .createdAt(Timestamp.from(Instant.now()))
                 .dataLocation(dltNotificationDTO.dataLocation())
-                .entityId(extractIdFromEntity(validatedEntity))
+                .entityId(extractIdFromDeletedEntity(validatedEntity))
                 .entityHash(calculateSHA256Hash(validatedEntity))
                 .status(TransactionStatus.PUBLISHED)
                 .trader(TransactionTrader.CONSUMER)
@@ -90,15 +91,17 @@ public class BrokerEntityPublicationServiceImpl implements BrokerEntityPublicati
                 .skip(1)
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
-        int responseCode = deleteRequest(brokerAdapterProperties.domain() + brokerAdapterProperties.paths().entities()
-                + "/" + sourceBrokerEntityID).thenApply(HttpResponse::statusCode).join();
-        if (responseCode == 204) {
-            log.debug("Entity deleted successfully");
-            return transactionService.saveTransaction(transaction).then();
-        } else {
-            log.debug("Error while deleting entity");
-        }
-        return Mono.empty();
+        return deleteRequestResponseCode(brokerAdapterProperties.domain() + brokerAdapterProperties.paths().entities() + "/" + sourceBrokerEntityID)
+                .flatMap(responseCode -> {
+                    if (responseCode == 204) {
+                        return Mono.defer(() -> transactionService.saveTransaction(transaction)).then();
+                    }
+                    return Mono.empty();
+                });
+    }
+
+    Mono<Integer> deleteRequestResponseCode(String url) {
+        return Mono.just(deleteRequest(url).thenApply(HttpResponse::statusCode).join());
     }
 
     private String extractIdFromEntity(String entity) {
@@ -106,7 +109,16 @@ public class BrokerEntityPublicationServiceImpl implements BrokerEntityPublicati
             JsonNode jsonNode = objectMapper.readTree(entity);
             return jsonNode.get("id").asText();
         } catch (Exception e) {
-            throw new JsonReadingException("Error while extracting data from entity");
+            throw new JsonReadingException("Error while extracting id from entity");
+        }
+    }
+
+    private String extractIdFromDeletedEntity(String entity) {
+        try {
+            JsonNode jsonNode = objectMapper.readTree(entity);
+            return jsonNode.get("detail").asText();
+        } catch (Exception e) {
+            throw new JsonReadingException("Error while extracting id from deleted entity");
         }
     }
 
@@ -134,6 +146,7 @@ public class BrokerEntityPublicationServiceImpl implements BrokerEntityPublicati
                 .transactionId(processId)
                 .createdAt(Timestamp.from(Instant.now()))
                 .dataLocation(dltNotificationDTO.dataLocation())
+                .entityType(dltNotificationDTO.eventType())
                 .entityId(extractIdFromEntity(brokerEntity))
                 .entityHash(calculateSHA256Hash(brokerEntity))
                 .status(TransactionStatus.PUBLISHED)
@@ -155,6 +168,7 @@ public class BrokerEntityPublicationServiceImpl implements BrokerEntityPublicati
                 .transactionId(processId)
                 .createdAt(Timestamp.from(Instant.now()))
                 .dataLocation(dltNotificationDTO.dataLocation())
+                .entityType(dltNotificationDTO.eventType())
                 .entityId(extractIdFromEntity(brokerEntity))
                 .entityHash(calculateSHA256Hash(brokerEntity))
                 .status(TransactionStatus.PUBLISHED)

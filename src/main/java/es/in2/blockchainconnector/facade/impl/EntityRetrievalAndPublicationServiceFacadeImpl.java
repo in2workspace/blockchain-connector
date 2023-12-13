@@ -27,7 +27,7 @@ public class EntityRetrievalAndPublicationServiceFacadeImpl implements EntityRet
         String processId = MDC.get("processId");
         return dltAdapterNotificationService.processNotification(dltNotificationDTO).doOnSuccess(voidValue -> log.info("ProcessID: {} - DLT Notification processed successfully", processId)).then(Mono.defer(() -> brokerEntityRetrievalService.retrieveEntityFromSourceBroker(processId, dltNotificationDTO))).flatMap(entityString -> {
             log.info("ProcessID: {} - Entity retrieved successfully {}", processId, entityString);
-            return brokerEntityValidationService.validateEntityIntegrity(String.valueOf(entityString), dltNotificationDTO);
+            return brokerEntityValidationService.validateEntityIntegrity(entityString, dltNotificationDTO);
         }).flatMap(validatedEntity -> {
             log.info("ProcessID: {} - Entity validated successfully {}", processId, validatedEntity);
             return brokerEntityPublicationService.publishOrDeleteAnEntityIntoContextBroker(processId, dltNotificationDTO, validatedEntity);

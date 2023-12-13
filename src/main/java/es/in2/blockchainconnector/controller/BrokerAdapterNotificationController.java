@@ -1,6 +1,6 @@
 package es.in2.blockchainconnector.controller;
 
-import es.in2.blockchainconnector.domain.BrokerNotificationDTO;
+import es.in2.blockchainconnector.domain.BrokerNotification;
 import es.in2.blockchainconnector.facade.BlockchainCreationAndPublicationServiceFacade;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,15 +21,15 @@ public class BrokerAdapterNotificationController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.OK)
-    public Mono<Void> brokerNotification(@RequestBody BrokerNotificationDTO brokerNotificationDTO) {
+    public Mono<Void> brokerNotification(@RequestBody BrokerNotification brokerNotification) {
         // Create a unique ID for the process
         String processId = UUID.randomUUID().toString();
         // Add the process ID to the Mapped Diagnostic Context (MDC)
         MDC.put("processId", processId);
         // Async Process Start
-        log.debug("ProcessID: {} - Broker Notification received: {}", processId, brokerNotificationDTO.toString());
+        log.debug("ProcessID: {} - Broker Notification received: {}", processId, brokerNotification.toString());
         return blockchainCreationAndPublicationServiceFacade
-                .createAndPublishABlockchainEventIntoBlockchainNode(brokerNotificationDTO)
+                .createAndPublishABlockchainEventIntoBlockchainNode(brokerNotification)
                 .doFinally(signalType -> MDC.remove("processId"));
     }
 

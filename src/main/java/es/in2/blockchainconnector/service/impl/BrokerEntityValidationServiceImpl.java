@@ -36,6 +36,7 @@ public class BrokerEntityValidationServiceImpl implements BrokerEntityValidation
                     .replace(sourceBrokerEntityURL, "")
                     .replace("?hl=", "");
             log.debug(" > Source entity hash: {}", sourceEntityHash);
+            log.debug(" > Extracted Broker entity: {}", brokerEntity);
             // Compare both hashes
             if (entityHash.equals(sourceEntityHash)) {
                 log.debug(" > Entity integrity is valid");
