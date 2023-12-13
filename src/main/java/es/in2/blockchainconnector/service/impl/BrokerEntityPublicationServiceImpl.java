@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
+import static es.in2.blockchainconnector.utils.HttpUtils.*;
 import static es.in2.blockchainconnector.utils.Utils.*;
 
 @Slf4j

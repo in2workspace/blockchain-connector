@@ -111,12 +111,4 @@ public class BrokerAdapterNotificationServiceImpl implements BrokerAdapterNotifi
 
     }
 
-
-
-    private void validateDataMap(Map<String, Object> dataMap) {
-        if (dataMap == null || dataMap.get("id") == null) {
-            throw new IllegalArgumentException("Invalid dataMap in BrokerNotificationDTO");
-        }
-    }
-
 }

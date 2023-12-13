@@ -22,8 +22,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+import static es.in2.blockchainconnector.utils.HttpUtils.getRequest;
 import static es.in2.blockchainconnector.utils.Utils.HASHLINK_PREFIX;
-import static es.in2.blockchainconnector.utils.Utils.getRequest;
 
 @Slf4j
 @Service

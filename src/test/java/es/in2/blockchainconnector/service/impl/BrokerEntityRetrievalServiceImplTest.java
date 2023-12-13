@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import es.in2.blockchainconnector.domain.*;
 import es.in2.blockchainconnector.service.TransactionService;
-import es.in2.blockchainconnector.utils.HttpUtils;
-import es.in2.blockchainconnector.utils.Utils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -15,12 +13,10 @@ import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.sql.Timestamp;
 import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-import static es.in2.blockchainconnector.utils.HttpUtils.getRequest;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 

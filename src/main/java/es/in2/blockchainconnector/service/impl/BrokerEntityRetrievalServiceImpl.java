@@ -20,7 +20,7 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.UUID;
 
-import static es.in2.blockchainconnector.utils.Utils.getRequest;
+import static es.in2.blockchainconnector.utils.HttpUtils.getRequest;
 
 @Slf4j
 @Service
