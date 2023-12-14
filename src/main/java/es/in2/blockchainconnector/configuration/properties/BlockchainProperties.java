@@ -20,8 +20,8 @@ public record BlockchainProperties(String rpcAddress, String userEthereumAddress
     @ConstructorBinding
     public BlockchainProperties(String rpcAddress, String userEthereumAddress,
                                 BlockchainSubscriptionConfigProperties subscription) {
-        this.rpcAddress = rpcAddress;
-        this.userEthereumAddress = userEthereumAddress;
+        this.rpcAddress = Optional.ofNullable(rpcAddress).orElse("https://red-t.alastria.io/v0/9461d9f4292b41230527d57ee90652a6");
+        this.userEthereumAddress = Optional.ofNullable(userEthereumAddress).orElse("0xb794f5ea0ba39494ce839613fffba74279579268");
         this.subscription = Optional.ofNullable(subscription).orElse(new BlockchainSubscriptionConfigProperties(null, false, null));
     }
 

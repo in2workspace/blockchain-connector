@@ -4,6 +4,13 @@ import org.springframework.boot.context.properties.bind.ConstructorBinding;
 
 import java.util.Optional;
 
+/**
+ * DLTAdapterPathProperties
+ *
+ * @param configureNode - configure node path
+ * @param publish - publish path
+ * @param subscribe - subscribe path
+ */
 public record DLTAdapterPathProperties(String configureNode, String publish, String subscribe) {
 
     @ConstructorBinding

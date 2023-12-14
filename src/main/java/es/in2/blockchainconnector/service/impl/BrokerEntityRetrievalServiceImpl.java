@@ -15,17 +15,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.UUID;
 
-import static es.in2.blockchainconnector.utils.Utils.ACCEPT_HEADER;
-import static es.in2.blockchainconnector.utils.Utils.APPLICATION_JSON;
+import static es.in2.blockchainconnector.utils.HttpUtils.getRequest;
 
 @Slf4j
 @Service
@@ -43,15 +38,8 @@ public class BrokerEntityRetrievalServiceImpl implements BrokerEntityRetrievalSe
             String sourceBrokerEntityURL = Arrays.stream(dltNotificationDTO.dataLocation().split("\\?hl="))
                     .findFirst()
                     .orElseThrow(IllegalArgumentException::new);
-            // Execute a GET request to the Source Context Broker
-            HttpClient client = HttpClient.newHttpClient();
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(sourceBrokerEntityURL))
-                    .headers(ACCEPT_HEADER, APPLICATION_JSON)
-                    .GET()
-                    .build();
             // Send request asynchronously
-            return Mono.fromFuture(() -> client.sendAsync(request, HttpResponse.BodyHandlers.ofString()))
+            return Mono.fromFuture(() -> getRequest(sourceBrokerEntityURL))
                     .flatMap(response -> {
                         try {
                             JsonNode jsonNode = objectMapper.readTree(response.body());
@@ -69,6 +57,7 @@ public class BrokerEntityRetrievalServiceImpl implements BrokerEntityRetrievalSe
                                     .hash("")
                                     .newTransaction(true)
                                     .build();
+                            log.debug(response.body());
                             return transactionService.saveTransaction(transaction)
                                     .thenReturn(response.body());
                         } catch (JsonProcessingException e) {

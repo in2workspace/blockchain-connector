@@ -36,6 +36,9 @@ public class Transaction implements Persistable<UUID> {
     @Column("entity_id")
     private String entityId;
 
+    @Column("entity_type")
+    private String entityType;
+
     @Column("entity_hash")
     private String entityHash;
 

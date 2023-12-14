@@ -71,6 +71,7 @@ public class BlockchainEventPublicationServiceImpl implements BlockchainEventPub
                             .createdAt(Timestamp.from(Instant.now()))
                             .dataLocation(onChainEvent.dataLocation())
                             .entityId(extractEntityId(onChainEvent.dataLocation()))
+                            .entityType(onChainEvent.eventType())
                             .entityHash(extractHlValue(onChainEvent.dataLocation()))
                             .status(TransactionStatus.PUBLISHED)
                             .trader(TransactionTrader.PRODUCER)
