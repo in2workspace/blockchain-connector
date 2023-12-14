@@ -2,7 +2,7 @@ name: Build and Deploy (Test Environment)
 
 on:
   pull_request:
-    branches: [ "develop" ]
+    branches: [ "release" ]
 
 jobs:
 
@@ -41,7 +41,6 @@ jobs:
     name: build-project
     if: success()
     runs-on: ubuntu-latest
-    environment: test
 
     steps:
       - name: Checkout Repository
