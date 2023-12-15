@@ -76,6 +76,7 @@ jobs:
           args:
             -Dsonar.projectKey=in2workspace_blockchain-connector
             -Dsonar.organization=in2workspace
+            -Dsonar.scm.provider=git
             -Dsonar.coverage.jacoco.xmlReportPaths=build/reports/jacoco/test/jacocoTestReport.xml
 
   deploy:
