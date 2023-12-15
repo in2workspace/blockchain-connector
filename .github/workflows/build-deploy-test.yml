@@ -60,8 +60,17 @@ jobs:
 
       - name: Verify Jacoco Report
         run: |
-          echo "Jacoco Report Location: $(pwd)/build/reports/jacoco/test/"
+          echo "Jacoco Report Location: $(pwd)/build/jacocoHtml/"
 
+  sonarcloud:
+    name: sonarcloud
+    needs: build
+    if: success()
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+
+    steps:
       - name: Analyze with SonarCloud
         uses: SonarSource/sonarcloud-github-action@de2e56b42aa84d0b1c5b622644ac17e505c9a049
         env:
@@ -72,28 +81,8 @@ jobs:
             -Dsonar.projectKey=in2workspace_blockchain-connector
             -Dsonar.organization=in2workspace
             -Dsonar.scm.disabled=true
-            -Dsonar.coverage.jacoco.xmlReportPaths=/home/runner/work/blockchain-connector/blockchain-connector/build/reports/jacoco/test/jacocoTestReport.xml
-
-#  sonarcloud:
-#    name: sonarcloud
-#    needs: build
-#    if: success()
-#    runs-on: ubuntu-latest
-#    permissions:
-#      pull-requests: read
-#
-#    steps:
-#      - name: Analyze with SonarCloud
-#        uses: SonarSource/sonarcloud-github-action@de2e56b42aa84d0b1c5b622644ac17e505c9a049
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-#        with:
-#          args:
-#            -Dsonar.projectKey=in2workspace_blockchain-connector
-#            -Dsonar.organization=in2workspace
-#            -Dsonar.scm.disabled=true
 #            -Dsonar.coverage.jacoco.xmlReportPaths=/home/runner/work/blockchain-connector/blockchain-connector/build/reports/jacoco/test/jacocoTestReport.xml
+            -Dsonar.coverage.jacoco.xmlReportPaths=build/jacocoHtml/jacoco.xml
 
   deploy:
     name: deploy-project
