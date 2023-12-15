@@ -22,12 +22,12 @@ class BrokerEntityValidationServiceImplTest {
     }
 
     @Test
-    void testValidateEntityIntegrity() throws NoSuchAlgorithmException {
+    void testValidateEntityIntegrity() {
         String brokerEntity = "testEntity";
         String entityHash = "entityHash";
-        String dataLocation = "sourceBrokerEntityURL?hl=b24443caf5b89330d7d9d8c45dad4786f90b3a1da6a526a2de34181c2b20326f";
+        String dataLocation = "sourceBrokerEntityURL?hl=0xb24443caf5b89330d7d9d8c45dad4786f90b3a1da6a526a2de34181c2b20326f";
 
-        DLTNotificationDTO dltNotificationDTO = new DLTNotificationDTO(null, null, null, null, "sourceBrokerEntityURL?hl=b24443caf5b89330d7d9d8c45dad4786f90b3a1da6a526a2de34181c2b20326f", null);
+        DLTNotificationDTO dltNotificationDTO = new DLTNotificationDTO(null, null, null, null, "sourceBrokerEntityURL?hl=0xb24443caf5b89330d7d9d8c45dad4786f90b3a1da6a526a2de34181c2b20326f", null);
 
         String result = brokerEntityValidationService.validateEntityIntegrity(brokerEntity, dltNotificationDTO).block();
         assertEquals(brokerEntity, result);

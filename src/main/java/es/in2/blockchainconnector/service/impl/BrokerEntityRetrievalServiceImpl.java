@@ -41,28 +41,27 @@ public class BrokerEntityRetrievalServiceImpl implements BrokerEntityRetrievalSe
             // Send request asynchronously
             return Mono.fromFuture(() -> getRequest(sourceBrokerEntityURL))
                     .flatMap(response -> {
-                        try {
-                            JsonNode jsonNode = objectMapper.readTree(response.body());
-                            String entityId = jsonNode.get("id").asText();
-                            // Create and save transaction after receiving the response
-                            Transaction transaction = Transaction.builder()
-                                    .id(UUID.randomUUID())
-                                    .transactionId(processId)
-                                    .createdAt(Timestamp.from(Instant.now()))
-                                    .dataLocation(dltNotificationDTO.dataLocation())
-                                    .entityId(entityId)
-                                    .entityHash("")
-                                    .status(TransactionStatus.RETRIEVED)
-                                    .trader(TransactionTrader.CONSUMER)
-                                    .hash("")
-                                    .newTransaction(true)
-                                    .build();
-                            log.debug(response.body());
-                            return transactionService.saveTransaction(transaction)
-                                    .thenReturn(response.body());
-                        } catch (JsonProcessingException e) {
-                            return Mono.error(new JsonReadingException("Error while extracting data from entity"));
-                        }
+                        String entityId = Arrays.stream(dltNotificationDTO.dataLocation().split("entities/|\\?hl="))
+                                .skip(1)
+                                .findFirst()
+                                .orElseThrow(IllegalArgumentException::new);
+
+                        // Create and save transaction after receiving the response
+                        Transaction transaction = Transaction.builder()
+                                .id(UUID.randomUUID())
+                                .transactionId(processId)
+                                .createdAt(Timestamp.from(Instant.now()))
+                                .dataLocation(dltNotificationDTO.dataLocation())
+                                .entityId(entityId)
+                                .entityHash("")
+                                .status(TransactionStatus.RETRIEVED)
+                                .trader(TransactionTrader.CONSUMER)
+                                .hash("")
+                                .newTransaction(true)
+                                .build();
+                        log.debug(response.body());
+                        return transactionService.saveTransaction(transaction)
+                                .thenReturn(response.body());
                     });
         });
     }
