@@ -81,7 +81,7 @@ jobs:
             -Dsonar.projectKey=in2workspace_blockchain-connector
             -Dsonar.organization=in2workspace
             -Dsonar.scm.disabled=true
-            -Dsonar.coverage.jacoco.xmlReportPaths=build/jacocoHtml/
+            -Dsonar.coverage.jacoco.xmlReportPaths=/home/runner/work/blockchain-connector/blockchain-connector/build/jacocoHtml/
 
   deploy:
     name: deploy-project
