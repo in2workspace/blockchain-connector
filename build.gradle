@@ -120,3 +120,6 @@ tasks.register('printProjectName') {
 		println rootProject.name
 	}
 }
+
+// Add the following line to ensure the jacocoTestReport task is executed before SonarQube analysis
+tasks.sonarqube.dependsOn jacocoTestReport
