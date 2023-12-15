@@ -58,10 +58,6 @@ jobs:
       - name: Build Project
         run: ./gradlew build
 
-      - name: Verify Jacoco Report
-        run: |
-          echo "Jacoco Report Location: $(pwd)/build/jacocoHtml/"
-
       - name: Upload JaCoCo Report
         uses: actions/upload-artifact@v4
         with:
