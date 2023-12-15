@@ -2,7 +2,7 @@ name: Build and Deploy (Test Environment)
 
 on:
   pull_request:
-    branches: [ "release" ]
+    branches: [ "develop" ]
 
 jobs:
 
@@ -57,6 +57,26 @@ jobs:
 
       - name: Build Project
         run: ./gradlew build
+
+  sonarcloud:
+    name: sonarcloud
+    needs: build
+    if: success()
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+
+    steps:
+      - name: Analyze with SonarCloud
+        uses: SonarSource/sonarcloud-github-action@de2e56b42aa84d0b1c5b622644ac17e505c9a049
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args:
+            -Dsonar.projectKey=in2workspace_blockchain-connector
+            -Dsonar.organization=in2workspace
+            -Dsonar.coverage.jacoco.xmlReportPaths=build/reports/jacoco/test/jacocoTestReport.xml
 
   deploy:
     name: deploy-project
