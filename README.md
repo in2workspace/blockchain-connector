@@ -1,4 +1,17 @@
-# Blockchain Connector
+<div align="center">
+ 
+<h1>Blockchain Connector</h1>
+<span>by </span><a href="https://in2.es">in2.es</a>
+<p><p>
+
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=in2workspace_blockchain-connector&metric=security_rating)](https://sonarcloud.io/dashboard?id=in2workspace_blockchain-connector)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=in2workspace_blockchain-connector&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=in2workspace_blockchain-connector)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=in2workspace_blockchain-connector&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=in2workspace_blockchain-connector)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=in2workspace_blockchain-connector&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=in2workspace_blockchain-connector)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=in2workspace_blockchain-connector&metric=ncloc)](https://sonarcloud.io/dashboard?id=in2workspace_blockchain-connector)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=in2workspace_blockchain-connector&metric=alert_status)](https://sonarcloud.io/dashboard?id=in2workspace_blockchain-connector)
+ 
+</div>
 
 ## Introduction
 The Blockchain Connector serves as a crucial component within the Access Node architecture, facilitating interaction between off-chain storage and on-chain storage. This RESTful API exposes a set of endpoints designed for seamless communication between the Context Broker and Blockchain.
