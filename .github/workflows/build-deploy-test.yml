@@ -58,6 +58,9 @@ jobs:
       - name: Build Project
         run: ./gradlew build
 
+      - name: Verify Jacoco Report
+        run: ls -R build/reports/jacoco/test/
+
   sonarcloud:
     name: sonarcloud
     needs: build
