@@ -12,7 +12,7 @@ group = 'es.in2'
 version = '2.0.0'
 
 java {
-	sourceCompatibility = '17'
+	sourceCompatibility = JavaVersion.VERSION_17
 }
 
 jacoco {
@@ -120,3 +120,6 @@ tasks.register('printProjectName') {
 		println rootProject.name
 	}
 }
+
+// Add the following line to ensure the jacocoTestReport task is executed before SonarQube analysis
+tasks.sonarqube.dependsOn jacocoTestReport

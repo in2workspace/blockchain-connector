@@ -58,6 +58,12 @@ jobs:
       - name: Build Project
         run: ./gradlew build
 
+      - name: Upload JaCoCo Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: build/jacocoHtml/
+
   sonarcloud:
     name: sonarcloud
     needs: build
@@ -67,6 +73,11 @@ jobs:
       pull-requests: read
 
     steps:
+      - name: Download JaCoCo Report
+        uses: actions/download-artifact@v4
+        with:
+          name: jacoco-report
+
       - name: Analyze with SonarCloud
         uses: SonarSource/sonarcloud-github-action@de2e56b42aa84d0b1c5b622644ac17e505c9a049
         env:
@@ -76,7 +87,8 @@ jobs:
           args:
             -Dsonar.projectKey=in2workspace_blockchain-connector
             -Dsonar.organization=in2workspace
-            -Dsonar.coverage.jacoco.xmlReportPaths=build/reports/jacoco/test/jacocoTestReport.xml
+            -Dsonar.scm.disabled=true
+            -Dsonar.coverage.jacoco.xmlReportPaths=build/jacocoHtml/
 
   deploy:
     name: deploy-project
