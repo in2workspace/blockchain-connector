@@ -1,4 +1,4 @@
-<div align="center">
+<div style="text-align: center;">
  
 <h1>Blockchain Connector</h1>
 <span>by </span><a href="https://in2.es">in2.es</a>
@@ -10,6 +10,7 @@
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=in2workspace_blockchain-connector&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=in2workspace_blockchain-connector)
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=in2workspace_blockchain-connector&metric=ncloc)](https://sonarcloud.io/dashboard?id=in2workspace_blockchain-connector)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=in2workspace_blockchain-connector&metric=alert_status)](https://sonarcloud.io/dashboard?id=in2workspace_blockchain-connector)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=in2workspace_blockchain-connector&metric=coverage)](https://sonarcloud.io/summary/new_code?id=in2workspace_blockchain-connector)
  
 </div>
 
@@ -54,7 +55,7 @@ In the docker-compose.yml file, the definition of services is structured collect
 
 ```yaml
 version: "3.8"
-services: 
+# services: 
 # Following components will be defined here
 ```
 
