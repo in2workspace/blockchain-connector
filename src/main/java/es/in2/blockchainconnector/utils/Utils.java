@@ -18,6 +18,8 @@ public class Utils {
     public static final String APPLICATION_JSON = "application/json";
     public static final String ACCEPT_HEADER = "Accept";
 
+    public static final String HASH_PREFIX = "0x";
+
     public static boolean isNullOrBlank(String string) {
         return string == null || string.isBlank();
     }
@@ -27,7 +29,7 @@ public class Utils {
     public static String calculateSHA256Hash(String data) throws NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance(SHA_256_ALGORITHM);
         byte[] hash = digest.digest(data.getBytes(StandardCharsets.UTF_8));
-        return bytesToHex(hash);
+        return HASH_PREFIX + bytesToHex(hash);
     }
 
     private static String bytesToHex(byte[] bytes) {

@@ -25,6 +25,7 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static es.in2.blockchainconnector.utils.HttpUtils.*;
 import static es.in2.blockchainconnector.utils.Utils.*;
@@ -41,7 +42,7 @@ public class BrokerEntityPublicationServiceImpl implements BrokerEntityPublicati
 
     @Override
     public Mono<Void> publishOrDeleteAnEntityIntoContextBroker(String processId, DLTNotificationDTO dltNotificationDTO, String validatedEntity) {
-        if (checkIfDeleted(validatedEntity)) {
+        if (checkIfDeleted(dltNotificationDTO)) {
             try {
                 return handleDeletedEntity(processId, dltNotificationDTO, validatedEntity);
             } catch (NoSuchAlgorithmException e) {
@@ -122,17 +123,18 @@ public class BrokerEntityPublicationServiceImpl implements BrokerEntityPublicati
         }
     }
 
-    private boolean checkIfDeleted(String response) {
+    private boolean checkIfDeleted(DLTNotificationDTO dltNotificationDTO) {
+        String sourceBrokerEntityURL = dltNotificationDTO.dataLocation().split("\\?hl=")[0];
+
         try {
-            JsonNode jsonNode = objectMapper.readTree(response);
-            if (jsonNode.has("title")) {
-                String title = jsonNode.get("title").asText();
-                return "Entity Not Found".equals(title);
-            }
-        } catch (Exception e) {
-            throw new JsonReadingException("Error while extracting data from entity");
+            int statusCode = getRequest(sourceBrokerEntityURL).get().statusCode();
+            log.debug(" > Status code: {}", statusCode);
+            return statusCode == 404;
+        } catch (InterruptedException | ExecutionException e) {
+            Thread.currentThread().interrupt();
+            throw new RequestErrorException("Error while checking if entity is deleted");
         }
-        return false;
+
     }
 
 
