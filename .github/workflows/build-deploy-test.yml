@@ -44,7 +44,7 @@ jobs:
         run: ./gradlew build sonar --info
 
   deploy:
-    name: deploy-project
+    name: deploy
     needs: build
     if: success()
     runs-on: ubuntu-latest
