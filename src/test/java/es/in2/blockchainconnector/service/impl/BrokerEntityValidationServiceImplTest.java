@@ -1,6 +1,7 @@
 package es.in2.blockchainconnector.service.impl;
 
 import es.in2.blockchainconnector.domain.DLTNotificationDTO;
+import es.in2.blockchainconnector.exception.HashLinkException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -24,10 +25,20 @@ class BrokerEntityValidationServiceImplTest {
     @Test
     void testValidateEntityIntegrity() {
         String brokerEntity = "testEntity";
-        String entityHash = "entityHash";
-        String dataLocation = "sourceBrokerEntityURL?hl=0xb24443caf5b89330d7d9d8c45dad4786f90b3a1da6a526a2de34181c2b20326f";
 
-        DLTNotificationDTO dltNotificationDTO = new DLTNotificationDTO(null, null, null, null, "sourceBrokerEntityURL?hl=0xb24443caf5b89330d7d9d8c45dad4786f90b3a1da6a526a2de34181c2b20326f", null);
+
+        DLTNotificationDTO dltNotificationDTO = new DLTNotificationDTO(null, null, null, null, "http://mkt1-broker-adapter:8080/api/v1/entities/urn:ngsi-ld:product-offering:443734333?hl=0xb24443caf5b89330d7d9d8c45dad4786f90b3a1da6a526a2de34181c2b20326f", null);
+
+        String result = brokerEntityValidationService.validateEntityIntegrity(brokerEntity, dltNotificationDTO).block();
+        assertEquals(brokerEntity, result);
+    }
+
+    @Test
+    void testValidateEntityIntegrity_deleted() {
+        String brokerEntity = "testEntity";
+
+
+        DLTNotificationDTO dltNotificationDTO = new DLTNotificationDTO(null, null, null, null, "http://mkt1-broker-adapter:8080/api/v1/entities/urn:ngsi-ld:product-offering:443734333", null);
 
         String result = brokerEntityValidationService.validateEntityIntegrity(brokerEntity, dltNotificationDTO).block();
         assertEquals(brokerEntity, result);
@@ -39,7 +50,7 @@ class BrokerEntityValidationServiceImplTest {
 
         DLTNotificationDTO dltNotificationDTO = new DLTNotificationDTO(null, null, null, null, "sourceBrokerEntityURL?hl=wrongHash", null);
 
-        assertThrows(IllegalArgumentException.class, () -> brokerEntityValidationService.validateEntityIntegrity(brokerEntity, dltNotificationDTO).block());
+        assertThrows(HashLinkException.class, () -> brokerEntityValidationService.validateEntityIntegrity(brokerEntity, dltNotificationDTO).block());
     }
 }
 

@@ -12,7 +12,6 @@ import es.in2.blockchainconnector.exception.BrokerNotificationParserException;
 import es.in2.blockchainconnector.exception.DLTAdapterCommunicationException;
 import es.in2.blockchainconnector.service.BlockchainEventPublicationService;
 import es.in2.blockchainconnector.service.TransactionService;
-import es.in2.blockchainconnector.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -89,6 +88,9 @@ public class BlockchainEventPublicationServiceImpl implements BlockchainEventPub
         try {
             URI uri = new URI(entityUrl);
             String query = uri.getQuery();
+            if (query == null) {
+                return "";
+            }
             String[] params = query.split("&");
             for (String param : params) {
                 String[] keyValue = param.split("=");
