@@ -82,4 +82,41 @@ class BrokerEntityRetrievalServiceImplTest {
             verify(transactionService, times(1)).saveTransaction(any());
         }
     }
+
+    @Test
+    void testRetrieveEntityFromSourceBroker_delete() throws Exception {
+        // Mocking DLTNotificationDTO
+        DLTNotificationDTO dltNotificationDTO = new DLTNotificationDTO(new BlockchainNodeNotificationIdDTO("type", "hex"), "address", "ProductOffering", new BlockchainNodeNotificationTimestampDTO("type", "hex"), "http://mkt1-broker-adapter:8080/api/v1/entities/urn:ngsi-ld:product-offering:443734333", Collections.emptyList());
+        // Mocking ObjectMapper response
+        JsonNode jsonNode = Mockito.mock(JsonNode.class);
+        when(jsonNode.get("id")).thenReturn(Mockito.mock(JsonNode.class));
+        when(jsonNode.get("id").asText()).thenReturn("mockedEntityId");
+        when(objectMapper.readTree("Mocked response")).thenReturn(jsonNode);
+        String mockedResponse = "Mocked response";
+
+        // Mocking TransactionService response
+        Transaction mockedTransaction = Transaction.builder()
+                .id(UUID.randomUUID())
+                .transactionId("mockedProcessId")
+                .createdAt(Timestamp.valueOf("2021-01-01 00:00:00.000000000"))
+                .dataLocation("http://example.com/entity?")
+                .entityId("mockedEntityId")
+                .entityHash("")
+                .status(TransactionStatus.RETRIEVED)
+                .trader(TransactionTrader.CONSUMER)
+                .hash("")
+                .newTransaction(true)
+                .build();
+        when(transactionService.saveTransaction(any(Transaction.class)))
+                .thenReturn(Mono.just(mockedTransaction));
+
+        try (MockedStatic<HttpClient> httpUtilsMockedStatic = Mockito.mockStatic(HttpClient.class)) {
+            httpUtilsMockedStatic.when(HttpClient::newHttpClient).thenReturn(httpClient);
+            when(httpResponse.statusCode()).thenReturn(404);
+            when(httpResponse.body()).thenReturn(mockedResponse);
+            when(httpClient.sendAsync(any(), any())).thenReturn(CompletableFuture.completedFuture(httpResponse));
+            brokerEntityRetrievalService.retrieveEntityFromSourceBroker("mockedProcessId", dltNotificationDTO).subscribe();
+            verify(transactionService, times(1)).saveTransaction(any());
+        }
+    }
 }
