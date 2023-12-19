@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static es.in2.blockchainconnector.utils.HttpUtils.getRequest;
+import static es.in2.blockchainconnector.utils.Utils.hasHLParameter;
 
 @Slf4j
 @Service
@@ -86,31 +87,6 @@ public class BrokerEntityRetrievalServiceImpl implements BrokerEntityRetrievalSe
                                 .thenReturn(response.body());
                     });
         });
-    }
-
-    private static boolean hasHLParameter(String urlString) {
-        try {
-            URL url = new URL(urlString);
-            Map<String, String> queryParams = splitQuery(url);
-            log.debug("Query params: {}", queryParams);
-            return queryParams.containsKey("hl");
-        } catch (MalformedURLException e) {
-            throw new HashLinkException("Error parsing datalocation");
-        }
-    }
-
-
-    private static Map<String, String> splitQuery(URL url) {
-        if (url.getQuery() == null || url.getQuery().isEmpty()) {
-            return new HashMap<>();
-        }
-        Map<String, String> queryPairs = new HashMap<>();
-        String[] pairs = url.getQuery().split("&");
-        for (String pair : pairs) {
-            int idx = pair.indexOf("=");
-            queryPairs.put(pair.substring(0, idx), idx > 0 && pair.length() > idx + 1 ? pair.substring(idx + 1) : null);
-        }
-        return queryPairs;
     }
 
 }

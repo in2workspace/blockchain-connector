@@ -49,7 +49,6 @@ public class BlockchainEventCreationServiceImpl implements BlockchainEventCreati
                 String brokerEntityUrl = brokerProperties.internalDomain() + brokerProperties.paths().entities();
                 // Create DataLocation parameter (Hashlink)
                 String dataLocation;
-                log.debug("DATAMAP, {}", onChainEventDTO.dataMap().toString());
                 if (onChainEventDTO.dataMap().containsKey("deletedAt")) {
                     dataLocation = brokerEntityUrl + "/" + onChainEventDTO.id();
                 } else {

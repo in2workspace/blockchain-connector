@@ -8,7 +8,6 @@ import es.in2.blockchainconnector.domain.DLTNotificationDTO;
 import es.in2.blockchainconnector.domain.Transaction;
 import es.in2.blockchainconnector.domain.TransactionStatus;
 import es.in2.blockchainconnector.domain.TransactionTrader;
-import es.in2.blockchainconnector.exception.HashLinkException;
 import es.in2.blockchainconnector.exception.InvalidHashlinkComparisonException;
 import es.in2.blockchainconnector.exception.JsonReadingException;
 import es.in2.blockchainconnector.exception.RequestErrorException;
@@ -19,20 +18,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.http.HttpResponse;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import static es.in2.blockchainconnector.utils.HttpUtils.*;
 import static es.in2.blockchainconnector.utils.Utils.calculateSHA256Hash;
+import static es.in2.blockchainconnector.utils.Utils.hasHLParameter;
 
 @Slf4j
 @Service
@@ -125,31 +121,6 @@ public class BrokerEntityPublicationServiceImpl implements BrokerEntityPublicati
         } catch (Exception e) {
             throw new JsonReadingException("Error while extracting id from deleted entity");
         }
-    }
-
-    private static boolean hasHLParameter(String urlString) {
-        try {
-            URL url = new URL(urlString);
-            Map<String, String> queryParams = splitQuery(url);
-            log.debug("Query params: {}", queryParams);
-            return queryParams.containsKey("hl");
-        } catch (MalformedURLException e) {
-            throw new HashLinkException("Error parsing datalocation");
-        }
-    }
-
-
-    private static Map<String, String> splitQuery(URL url) {
-        if (url.getQuery() == null || url.getQuery().isEmpty()) {
-            return new HashMap<>();
-        }
-        Map<String, String> queryPairs = new HashMap<>();
-        String[] pairs = url.getQuery().split("&");
-        for (String pair : pairs) {
-            int idx = pair.indexOf("=");
-            queryPairs.put(pair.substring(0, idx), idx > 0 && pair.length() > idx + 1 ? pair.substring(idx + 1) : null);
-        }
-        return queryPairs;
     }
 
     private Mono<Void> publishEntityToBroker(String processId, String brokerEntity, DLTNotificationDTO dltNotificationDTO) throws NoSuchAlgorithmException {
