@@ -40,11 +40,6 @@ public class BlockchainEventCreationServiceImpl implements BlockchainEventCreati
             log.info("ProcessID: {} - Processing OnChainEventDTO: {}", processId, onChainEventDTO);
             try {
                 log.debug("ProcessID: {} - Creating blockchain event...", processId);
-                // Extract entity from OnChainEventDTO
-                String extractedEntity = getRequest
-                        (brokerProperties.internalDomain() + brokerProperties.paths().entities() + "/" + onChainEventDTO.id())
-                        .thenApply(HttpResponse::body).join();
-                String entityHashed = Utils.calculateSHA256Hash(extractedEntity);
                 // Build dynamic URL by Broker Entity Use Case
                 String brokerEntityUrl = brokerProperties.internalDomain() + brokerProperties.paths().entities();
                 // Create DataLocation parameter (Hashlink)
@@ -52,6 +47,11 @@ public class BlockchainEventCreationServiceImpl implements BlockchainEventCreati
                 if (onChainEventDTO.dataMap().containsKey("deletedAt")) {
                     dataLocation = brokerEntityUrl + "/" + onChainEventDTO.id();
                 } else {
+                    // Extract entity from OnChainEventDTO
+                    String extractedEntity = getRequest
+                            (brokerProperties.internalDomain() + brokerProperties.paths().entities() + "/" + onChainEventDTO.id())
+                            .thenApply(HttpResponse::body).join();
+                    String entityHashed = Utils.calculateSHA256Hash(extractedEntity);
                     dataLocation = brokerEntityUrl + "/" + onChainEventDTO.id() + HASHLINK_PREFIX + entityHashed;
                 }
                 // Build OnChainEvent
