@@ -1,13 +1,11 @@
 package es.in2.blockchainconnector.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import es.in2.blockchainconnector.domain.DLTNotificationDTO;
 import es.in2.blockchainconnector.domain.Transaction;
 import es.in2.blockchainconnector.domain.TransactionStatus;
 import es.in2.blockchainconnector.domain.TransactionTrader;
-import es.in2.blockchainconnector.exception.JsonReadingException;
+import es.in2.blockchainconnector.exception.HashLinkException;
 import es.in2.blockchainconnector.service.BrokerEntityRetrievalService;
 import es.in2.blockchainconnector.service.TransactionService;
 import lombok.RequiredArgsConstructor;
@@ -15,12 +13,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import static es.in2.blockchainconnector.utils.HttpUtils.getRequest;
+import static es.in2.blockchainconnector.utils.Utils.hasHLParameter;
 
 @Slf4j
 @Service
@@ -45,6 +48,26 @@ public class BrokerEntityRetrievalServiceImpl implements BrokerEntityRetrievalSe
                                 .skip(1)
                                 .findFirst()
                                 .orElseThrow(IllegalArgumentException::new);
+
+                        if (!hasHLParameter(dltNotificationDTO.dataLocation()) && response.statusCode() == 404) {
+                            log.debug(" > Detected deleted entity notification");
+                            // Create and save transaction after receiving the response
+                            Transaction transaction = Transaction.builder()
+                                    .id(UUID.randomUUID())
+                                    .transactionId(processId)
+                                    .createdAt(Timestamp.from(Instant.now()))
+                                    .dataLocation(dltNotificationDTO.dataLocation())
+                                    .entityId(entityId)
+                                    .entityHash("")
+                                    .status(TransactionStatus.DELETED)
+                                    .trader(TransactionTrader.CONSUMER)
+                                    .hash("")
+                                    .newTransaction(true)
+                                    .build();
+                            log.debug(response.body());
+                            return transactionService.saveTransaction(transaction)
+                                    .thenReturn(response.body());
+                        }
 
                         // Create and save transaction after receiving the response
                         Transaction transaction = Transaction.builder()

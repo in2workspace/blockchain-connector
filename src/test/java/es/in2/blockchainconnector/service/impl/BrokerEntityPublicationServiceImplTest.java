@@ -29,6 +29,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -67,7 +68,7 @@ class BrokerEntityPublicationServiceImplTest {
         try (MockedStatic<HttpClient> httpUtilsMockedStatic = Mockito.mockStatic(HttpClient.class)) {
             // Arrange
             String processId = "process123";
-            DLTNotificationDTO dltNotificationDTO = new DLTNotificationDTO(new BlockchainNodeNotificationIdDTO("type", "hex"), "address", "ProductOffering", new BlockchainNodeNotificationTimestampDTO("type", "hex"), "http://mkt1-broker-adapter:8080/api/v1/entities/urn:ngsi-ld:product-offering:443734333?hl=753d19c05e3b98b9dd07be5560dab7f7378bd619725fefff36db48a918e2e311", Collections.emptyList());
+            DLTNotificationDTO dltNotificationDTO = new DLTNotificationDTO(new BlockchainNodeNotificationIdDTO("type", "hex"), "address", "ProductOffering", new BlockchainNodeNotificationTimestampDTO("type", "hex"), "http://mkt1-broker-adapter:8080/api/v1/entities/urn:ngsi-ld:product-offering:443734333", Collections.emptyList());
             String validatedEntity = "{\"type\":\"https://uri.etsi.org/ngsi-ld/errors/ResourceNotFound\",\"title\":\"Entity Not Found\",\"detail\":\"urn:ngsi-ld:product-offering:443734333\"}";
             Transaction transaction = Transaction.builder()
                     .id(UUID.randomUUID())

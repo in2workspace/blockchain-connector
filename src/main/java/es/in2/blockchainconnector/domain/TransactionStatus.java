@@ -9,7 +9,8 @@ public enum TransactionStatus {
     RECEIVED("notified"),
     CREATED("created"),
     RETRIEVED("retrieved"),
-    PUBLISHED("published");
+    PUBLISHED("published"),
+    DELETED("deleted");
 
     private final String description;
 }

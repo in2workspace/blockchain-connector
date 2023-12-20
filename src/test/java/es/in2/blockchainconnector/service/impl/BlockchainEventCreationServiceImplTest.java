@@ -79,4 +79,47 @@ class BlockchainEventCreationServiceImplTest {
             verify(transactionService, times(1)).saveTransaction(any());
         }
     }
+
+    @Test
+    void createBlockchainEventTransaction_deleted() {
+        try (MockedStatic<HttpClient> httpUtilsMockedStatic = Mockito.mockStatic(HttpClient.class)) {
+
+            // Arrange
+
+            String processId = "testProcessId";
+            String entityHashed = "{\n" +
+                    "    \"type\": \"https://uri.etsi.org/ngsi-ld/errors/ResourceNotFound\",\n" +
+                    "    \"title\": \"Resource not found.\",\n" +
+                    "    \"detail\": {\n" +
+                    "        \"message\": \"urn:ngsi-ld:product-offering:443734333 was not found\"\n" +
+                    "    },\n" +
+                    "    \"errorCode\": 404\n" +
+                    "}";
+
+            // Create a sample OnChainEventDTO
+            OnChainEventDTO onChainEventDTO = OnChainEventDTO.builder()
+                    .id("sampleId")
+                    .eventType("sampleEventType")
+                    .dataMap(Collections.singletonMap("deletedAt", "sampleValue"))
+                    .data("sampleData")
+                    .build();
+
+            // Mock the behavior of saveTransaction in TransactionService
+            when(transactionService.saveTransaction(any())).thenReturn(Mono.empty());
+            httpUtilsMockedStatic.when(HttpClient::newHttpClient).thenReturn(httpClient);
+            when(httpResponse.statusCode()).thenReturn(200);
+            when(httpResponse.body()).thenReturn(entityHashed);
+            when(httpClient.sendAsync(any(), any())).thenReturn(CompletableFuture.completedFuture(httpResponse));
+
+            // Act
+            Mono<OnChainEvent> resultMono = service.createBlockchainEvent(processId, onChainEventDTO);
+
+            // Assert
+            OnChainEvent result = resultMono.block(); // Blocks until the Mono is completed
+            assert result != null;
+
+            // Verify that saveTransaction was called exactly once with any Transaction object as an argument
+            verify(transactionService, times(1)).saveTransaction(any());
+        }
+    }
 }

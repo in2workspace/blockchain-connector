@@ -74,4 +74,6 @@ class BrokerAdapterNotificationServiceImplTest {
        Mockito.verify(transactionService, Mockito.times(1)).saveTransaction(Mockito.any(Transaction.class));
     }
 
+
+
 }

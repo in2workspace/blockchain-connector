@@ -27,7 +27,8 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import static es.in2.blockchainconnector.utils.HttpUtils.*;
-import static es.in2.blockchainconnector.utils.Utils.*;
+import static es.in2.blockchainconnector.utils.Utils.calculateSHA256Hash;
+import static es.in2.blockchainconnector.utils.Utils.hasHLParameter;
 
 @Slf4j
 @Service
@@ -41,7 +42,7 @@ public class BrokerEntityPublicationServiceImpl implements BrokerEntityPublicati
 
     @Override
     public Mono<Void> publishOrDeleteAnEntityIntoContextBroker(String processId, DLTNotificationDTO dltNotificationDTO, String validatedEntity) {
-        if (checkIfDeleted(validatedEntity)) {
+        if (!hasHLParameter(dltNotificationDTO.dataLocation())) {
             try {
                 return handleDeletedEntity(processId, dltNotificationDTO, validatedEntity);
             } catch (NoSuchAlgorithmException e) {
@@ -121,20 +122,6 @@ public class BrokerEntityPublicationServiceImpl implements BrokerEntityPublicati
             throw new JsonReadingException("Error while extracting id from deleted entity");
         }
     }
-
-    private boolean checkIfDeleted(String response) {
-        try {
-            JsonNode jsonNode = objectMapper.readTree(response);
-            if (jsonNode.has("title")) {
-                String title = jsonNode.get("title").asText();
-                return "Entity Not Found".equals(title);
-            }
-        } catch (Exception e) {
-            throw new JsonReadingException("Error while extracting data from entity");
-        }
-        return false;
-    }
-
 
     private Mono<Void> publishEntityToBroker(String processId, String brokerEntity, DLTNotificationDTO dltNotificationDTO) throws NoSuchAlgorithmException {
         // Publish the entity to the broker
