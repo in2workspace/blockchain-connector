@@ -18,6 +18,7 @@ import java.net.http.HttpResponse;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -53,7 +54,7 @@ public class BrokerAdapterNotificationServiceImpl implements BrokerAdapterNotifi
                 .switchIfEmpty(processNewTransaction(dataMap, processId));  // En caso de que no haya una transacción previa
     }
 
-    private Mono<OnChainEventDTO> processBasedOnPreviousTransaction(Map<String, Object> dataMap, Transaction previousTransaction, String processId) {
+    private Mono<OnChainEventDTO> processBasedOnPreviousTransaction(Map<String, Object> dataMap, List<Transaction> previousTransaction, String processId) {
         String dataToPersist;
         log.debug("ProcessID: {} - Previous transaction: {}", processId, previousTransaction);
         try {
@@ -72,17 +73,17 @@ public class BrokerAdapterNotificationServiceImpl implements BrokerAdapterNotifi
         }
 
         if (dataMap.containsKey("deletedAt")) {
-            if (previousTransaction.getStatus() == TransactionStatus.DELETED) {
+            if (previousTransaction.get(previousTransaction.size() -1).getStatus() == TransactionStatus.DELETED) {
                 log.debug("ProcessID: {} - Transaction already deleted", processId);
                 return Mono.empty(); // Finaliza el flujo si la transacción previa está eliminada
             }
             log.debug("ProcessID: {} - Creating deleted transaction", processId);
-            return createAndSaveDeletedTransaction(dataMap, previousTransaction, processId, dataToPersist);
-        } else if (Objects.equals(previousTransaction.getEntityHash(), hashedEntity)) {
+            return createAndSaveDeletedTransaction(dataMap, previousTransaction.get(previousTransaction.size() -1), processId, dataToPersist);
+        } else if (Objects.equals(previousTransaction.get(previousTransaction.size() -1).getEntityHash(), hashedEntity)) {
             log.debug("ProcessID: {} - Entity hash matches previous transaction", processId);
             return Mono.empty(); // Finaliza el flujo si el hash coincide
         }
-        log.debug(String.valueOf(Objects.equals(previousTransaction.getEntityHash(), hashedEntity)));
+        log.debug(String.valueOf(Objects.equals(previousTransaction.get(previousTransaction.size() -1).getEntityHash(), hashedEntity)));
         log.debug("ProcessID: {} - Creating new transaction", processId);
         return createAndSaveTransaction(dataMap, processId, dataToPersist);
     }
