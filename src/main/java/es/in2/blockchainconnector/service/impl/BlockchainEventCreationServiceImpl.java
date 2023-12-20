@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static es.in2.blockchainconnector.utils.HttpUtils.getRequest;
-import static es.in2.blockchainconnector.utils.Utils.HASHLINK_PREFIX;
+import static es.in2.blockchainconnector.utils.Utils.*;
 
 @Slf4j
 @Service
@@ -71,23 +71,19 @@ public class BlockchainEventCreationServiceImpl implements BlockchainEventCreati
             }
         }).flatMap(onChainEvent -> {
             Transaction transaction;
-            try {
-                transaction = Transaction.builder()
-                        .id(UUID.randomUUID())
-                        .transactionId(processId)
-                        .createdAt(Timestamp.from(Instant.now()))
-                        .dataLocation(onChainEvent.dataLocation())
-                        .entityId(onChainEventDTO.id())
-                        .entityType(onChainEvent.eventType())
-                        .entityHash(Utils.calculateSHA256Hash(onChainEventDTO.data()))
-                        .status(TransactionStatus.CREATED)
-                        .trader(TransactionTrader.PRODUCER)
-                        .hash("")
-                        .newTransaction(true)
-                        .build();
-            } catch (NoSuchAlgorithmException e) {
-                return Mono.error(new HashLinkException("Error calculating hash"));
-            }
+            transaction = Transaction.builder()
+                    .id(UUID.randomUUID())
+                    .transactionId(processId)
+                    .createdAt(Timestamp.from(Instant.now()))
+                    .dataLocation(onChainEvent.dataLocation())
+                    .entityId(onChainEventDTO.id())
+                    .entityType(onChainEvent.eventType())
+                    .entityHash(generateEntityHashFromDataLocation(onChainEvent.dataLocation()))
+                    .status(TransactionStatus.CREATED)
+                    .trader(TransactionTrader.PRODUCER)
+                    .hash("")
+                    .newTransaction(true)
+                    .build();
             return transactionService.saveTransaction(transaction).thenReturn(onChainEvent);
         }).onErrorMap(NoSuchAlgorithmException.class, e -> new HashLinkException("Error creating blockchain event", e.getCause()));
     }
@@ -101,6 +97,13 @@ public class BlockchainEventCreationServiceImpl implements BlockchainEventCreati
         } catch (NoSuchAlgorithmException | URISyntaxException ex) {
             throw new HashCreationException("Error while calculating hash to create onChainEvent");
         }
+    }
+
+    private static String generateEntityHashFromDataLocation(String datalocation) {
+        if(hasHLParameter(datalocation)) {
+            return extractHlValue(datalocation);
+        }
+        return "";
     }
 
 

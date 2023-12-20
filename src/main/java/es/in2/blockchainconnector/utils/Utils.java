@@ -1,11 +1,11 @@
 package es.in2.blockchainconnector.utils;
 
+import es.in2.blockchainconnector.exception.BrokerNotificationParserException;
 import es.in2.blockchainconnector.exception.HashLinkException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -45,6 +45,26 @@ public class Utils {
         String result = formatter.toString();
         formatter.close();
         return result;
+    }
+
+    public static String extractHlValue(String entityUrl) {
+        try {
+            URI uri = new URI(entityUrl);
+            String query = uri.getQuery();
+            if (query == null) {
+                return "";
+            }
+            String[] params = query.split("&");
+            for (String param : params) {
+                String[] keyValue = param.split("=");
+                if (keyValue.length == 2 && "hl".equals(keyValue[0])) {
+                    return URLDecoder.decode(keyValue[1], StandardCharsets.UTF_8);
+                }
+            }
+        } catch (URISyntaxException e) {
+            throw new BrokerNotificationParserException("Error while extracting hl value from datalocation");
+        }
+        return null;
     }
 
     public static boolean hasHLParameter(String urlString) {

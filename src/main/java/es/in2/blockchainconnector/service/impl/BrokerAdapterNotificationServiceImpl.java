@@ -78,20 +78,20 @@ public class BrokerAdapterNotificationServiceImpl implements BrokerAdapterNotifi
         else if (dataMap.containsKey("deletedAt")) {
             if (previousTransaction.get(previousTransaction.size() -1).getStatus() == TransactionStatus.DELETED) {
                 log.debug("ProcessID: {} - Transaction already deleted", processId);
-                return Mono.empty(); // Finaliza el flujo si la transacción previa está eliminada
+                return Mono.empty();
             }
             log.debug("ProcessID: {} - Creating deleted transaction", processId);
             return createAndSaveDeletedTransaction(dataMap, previousTransaction.get(previousTransaction.size() -1), processId, dataToPersist);
         } else if (Objects.equals(previousTransaction.get(previousTransaction.size() -1).getEntityHash(), hashedEntity)) {
             log.debug("ProcessID: {} - Entity hash matches previous transaction", processId);
-            return Mono.empty(); // Finaliza el flujo si el hash coincide
+            return Mono.empty();
         } else if (previousTransaction.get(previousTransaction.size() - 1).getStatus() == TransactionStatus.DELETED) {
             log.debug("ProcessID: {} - Transaction already deleted", processId);
             return createAndSaveTransaction(dataMap, processId, dataToPersist);
         }
         else {
-            log.debug("ProcessID: {} - error during the process", processId);
-            return Mono.empty();
+            log.debug("ProcessID: {} - Update entity detected", processId);
+            return createAndSaveTransaction(dataMap, processId, dataToPersist);
         }
     }
     private Mono<OnChainEventDTO> createAndSaveTransaction(Map<String, Object> dataMap, String processId, String dataToPersist) {
