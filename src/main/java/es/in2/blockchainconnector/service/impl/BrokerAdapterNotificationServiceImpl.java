@@ -71,8 +71,11 @@ public class BrokerAdapterNotificationServiceImpl implements BrokerAdapterNotifi
         } catch (NoSuchAlgorithmException e) {
             throw new HashCreationException("Error calculating hash");
         }
-
-        if (dataMap.containsKey("deletedAt")) {
+        if (previousTransaction.isEmpty()) {
+            log.debug("ProcessID: {} - new transaction", processId);
+            return createAndSaveTransaction(dataMap, processId, dataToPersist);
+        }
+        else if (dataMap.containsKey("deletedAt")) {
             if (previousTransaction.get(previousTransaction.size() -1).getStatus() == TransactionStatus.DELETED) {
                 log.debug("ProcessID: {} - Transaction already deleted", processId);
                 return Mono.empty(); // Finaliza el flujo si la transacción previa está eliminada
@@ -83,9 +86,10 @@ public class BrokerAdapterNotificationServiceImpl implements BrokerAdapterNotifi
             log.debug("ProcessID: {} - Entity hash matches previous transaction", processId);
             return Mono.empty(); // Finaliza el flujo si el hash coincide
         }
-        log.debug(String.valueOf(Objects.equals(previousTransaction.get(previousTransaction.size() -1).getEntityHash(), hashedEntity)));
-        log.debug("ProcessID: {} - Creating new transaction", processId);
-        return createAndSaveTransaction(dataMap, processId, dataToPersist);
+        else {
+            log.debug("ProcessID: {} - error during the process", processId);
+            return Mono.empty();
+        }
     }
 
     private Mono<OnChainEventDTO> processNewTransaction(Map<String, Object> dataMap, String processId) {
