@@ -48,23 +48,27 @@ class BlockchainEventPublicationServiceImplTest {
     @Test
     void testPublishBlockchainEventIntoBlockchainNode() throws Exception {
         String processId = "processId";
-        OnChainEvent onChainEvent = new OnChainEvent("id", "type", "entityId", "", "http://example.com/entity?hl=test", null);
+        OnChainEvent onChainEvent = new OnChainEvent("id", "type", "entityId", "", "http://example.com/entity", null);
+        try (MockedStatic<Utils> utilsMockedStatic = mockStatic(Utils.class)) {
+            utilsMockedStatic.when(() -> Utils.extractHlValue(anyString())).thenReturn("hash");
 
-        try (MockedStatic<HttpClient> httpUtilsMockedStatic = Mockito.mockStatic(HttpClient.class)) {
-            when(dltAdapterProperties.domain()).thenReturn("http://example.com");
-            when(dltAdapterProperties.paths()).thenReturn(new DLTAdapterProperties("http://dlt-adapter:8080", new DLTAdapterPathProperties("/configureNode", "/publish", "/subscribe")).paths());
-            when(objectMapper.writeValueAsString(onChainEvent)).thenReturn("json");
-            when(dltAdapterConfig.dltAdapterHttpClient()).thenReturn(httpClient);
-            Transaction mockTransaction = new Transaction();
-            when(transactionService.saveTransaction(any())).thenReturn(Mono.just(mockTransaction));
+            try (MockedStatic<HttpClient> httpUtilsMockedStatic = Mockito.mockStatic(HttpClient.class)) {
+                when(Utils.hasHLParameter(anyString())).thenReturn(false);
+                when(dltAdapterProperties.domain()).thenReturn("http://example.com");
+                when(dltAdapterProperties.paths()).thenReturn(new DLTAdapterProperties("http://dlt-adapter:8080", new DLTAdapterPathProperties("/configureNode", "/publish", "/subscribe")).paths());
+                when(objectMapper.writeValueAsString(onChainEvent)).thenReturn("json");
+                when(dltAdapterConfig.dltAdapterHttpClient()).thenReturn(httpClient);
+                Transaction mockTransaction = new Transaction();
+                when(transactionService.saveTransaction(any())).thenReturn(Mono.just(mockTransaction));
 
-            blockchainEventPublicationService.publishBlockchainEventIntoBlockchainNode(processId, onChainEvent).subscribe();
 
-            verify(transactionService).saveTransaction(any(Transaction.class));
-        }
+                blockchainEventPublicationService.publishBlockchainEventIntoBlockchainNode(processId, onChainEvent).subscribe();
 
+                verify(transactionService).saveTransaction(any(Transaction.class));
+            }
 
 
         }
     }
+}
 
