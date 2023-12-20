@@ -28,8 +28,7 @@ import java.time.Instant;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-import static es.in2.blockchainconnector.utils.Utils.APPLICATION_JSON;
-import static es.in2.blockchainconnector.utils.Utils.CONTENT_TYPE;
+import static es.in2.blockchainconnector.utils.Utils.*;
 
 @Slf4j
 @Service
@@ -64,6 +63,23 @@ public class BlockchainEventPublicationServiceImpl implements BlockchainEventPub
                     }
                 })
                 .flatMap(response -> {
+                    if(!hasHLParameter(onChainEvent.dataLocation())) {
+                        Transaction transaction = Transaction.builder()
+                                .id(UUID.randomUUID())
+                                .transactionId(processId)
+                                .createdAt(Timestamp.from(Instant.now()))
+                                .dataLocation(onChainEvent.dataLocation())
+                                .entityId(extractEntityId(onChainEvent.dataLocation()))
+                                .entityType(onChainEvent.eventType())
+                                .entityHash(extractHlValue(onChainEvent.dataLocation()))
+                                .status(TransactionStatus.DELETED)
+                                .trader(TransactionTrader.PRODUCER)
+                                .hash("")
+                                .newTransaction(true)
+                                .build();
+                        log.debug(transaction.toString());
+                        return transactionService.saveTransaction(transaction);
+                    }
                     Transaction transaction = Transaction.builder()
                             .id(UUID.randomUUID())
                             .transactionId(processId)
@@ -113,5 +129,6 @@ public class BlockchainEventPublicationServiceImpl implements BlockchainEventPub
             throw new BrokerNotificationParserException("Error while extracting entityId from datalocation");
         }
     }
+
 
 }
