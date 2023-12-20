@@ -50,8 +50,8 @@ public class BrokerAdapterNotificationServiceImpl implements BrokerAdapterNotifi
         String id = dataMap.get("id").toString();
 
         return transactionService.getTransaction(id)
-                .flatMap(previousTransaction -> processBasedOnPreviousTransaction(dataMap, previousTransaction, processId))
-                .switchIfEmpty(processNewTransaction(dataMap, processId));  // En caso de que no haya una transacción previa
+                .doOnNext(transactions -> log.debug("ProcessID: {} - Transactions: {}", processId, transactions))
+                .flatMap(previousTransaction -> processBasedOnPreviousTransaction(dataMap, previousTransaction, processId));
     }
 
     private Mono<OnChainEventDTO> processBasedOnPreviousTransaction(Map<String, Object> dataMap, List<Transaction> previousTransaction, String processId) {
@@ -85,25 +85,15 @@ public class BrokerAdapterNotificationServiceImpl implements BrokerAdapterNotifi
         } else if (Objects.equals(previousTransaction.get(previousTransaction.size() -1).getEntityHash(), hashedEntity)) {
             log.debug("ProcessID: {} - Entity hash matches previous transaction", processId);
             return Mono.empty(); // Finaliza el flujo si el hash coincide
+        } else if (previousTransaction.get(previousTransaction.size() - 1).getStatus() == TransactionStatus.DELETED) {
+            log.debug("ProcessID: {} - Transaction already deleted", processId);
+            return createAndSaveTransaction(dataMap, processId, dataToPersist);
         }
         else {
             log.debug("ProcessID: {} - error during the process", processId);
             return Mono.empty();
         }
     }
-
-    private Mono<OnChainEventDTO> processNewTransaction(Map<String, Object> dataMap, String processId) {
-        String dataToPersist;
-        try {
-            dataToPersist = objectMapper.writeValueAsString(dataMap);
-        } catch (JsonProcessingException e) {
-            log.error("ProcessID: {} - Error processing JSON: {}", processId, e.getMessage());
-            return Mono.error(new BrokerNotificationParserException("Error processing JSON", e));
-        }
-
-        return createAndSaveTransaction(dataMap, processId, dataToPersist);
-    }
-
     private Mono<OnChainEventDTO> createAndSaveTransaction(Map<String, Object> dataMap, String processId, String dataToPersist) {
         String id = dataMap.get("id").toString();
         OnChainEventDTO onChainEventDTO = OnChainEventDTO.builder()

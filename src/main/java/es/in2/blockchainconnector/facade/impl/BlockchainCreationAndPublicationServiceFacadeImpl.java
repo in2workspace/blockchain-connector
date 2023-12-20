@@ -33,7 +33,6 @@ public class BlockchainCreationAndPublicationServiceFacadeImpl implements Blockc
                                 .flatMap(onchainEvent -> blockchainEventPublicationService.publishBlockchainEventIntoBlockchainNode(processId, onchainEvent))
                                 .doOnSuccess(voidValue -> log.info("ProcessID: {} - Blockchain Event published successfully", processId))
                 )
-                .doOnSuccess(voidValue -> log.info("ProcessID: {} - Broker Notification resulted in no action", processId))
                 .doOnError(error -> log.error("Error creating or publishing Blockchain Event: {}", error.getMessage(), error));
     }
 
