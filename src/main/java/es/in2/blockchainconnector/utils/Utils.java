@@ -3,7 +3,6 @@ package es.in2.blockchainconnector.utils;
 import es.in2.blockchainconnector.exception.BrokerNotificationParserException;
 import es.in2.blockchainconnector.exception.HashLinkException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 import java.net.*;
 import java.nio.charset.StandardCharsets;
@@ -14,8 +13,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-@Component
 public class Utils {
+    private Utils() {
+        throw new IllegalStateException("Utility class");
+    }
 
     public static final String SHA_256_ALGORITHM = "SHA-256";
     public static final String HASHLINK_PREFIX = "?hl=";
@@ -28,8 +29,6 @@ public class Utils {
     public static boolean isNullOrBlank(String string) {
         return string == null || string.isBlank();
     }
-
-
 
     public static String calculateSHA256Hash(String data) throws NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance(SHA_256_ALGORITHM);
@@ -46,6 +45,7 @@ public class Utils {
         formatter.close();
         return result;
     }
+
 
     public static String extractHlValue(String entityUrl) {
         try {
@@ -77,8 +77,7 @@ public class Utils {
             throw new HashLinkException("Error parsing datalocation");
         }
     }
-
-
+  
     private static Map<String, String> splitQuery(URL url) {
         if (url.getQuery() == null || url.getQuery().isEmpty()) {
             return new HashMap<>();
@@ -92,6 +91,17 @@ public class Utils {
         return queryPairs;
     }
 
-
+    private static Map<String, String> splitQuery(URL url) {
+        if (url.getQuery() == null || url.getQuery().isEmpty()) {
+            return new HashMap<>();
+        }
+        Map<String, String> queryPairs = new HashMap<>();
+        String[] pairs = url.getQuery().split("&");
+        for (String pair : pairs) {
+            int idx = pair.indexOf("=");
+            queryPairs.put(pair.substring(0, idx), idx > 0 && pair.length() > idx + 1 ? pair.substring(idx + 1) : null);
+        }
+        return queryPairs;
+    }
 
 }
