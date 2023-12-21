@@ -1,7 +1,6 @@
 package es.in2.blockchainconnector.utils;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -10,9 +9,10 @@ import java.net.http.HttpResponse;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
-@Component
 public class HttpUtils {
-
+    private HttpUtils() {
+        throw new IllegalStateException("Utility class");
+    }
     public static final String CONTENT_TYPE = "Content-Type";
     public static final String APPLICATION_JSON = "application/json";
     public static final String ACCEPT_HEADER = "Accept";
