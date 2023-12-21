@@ -2,7 +2,6 @@ package es.in2.blockchainconnector.utils;
 
 import es.in2.blockchainconnector.exception.HashLinkException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -14,8 +13,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-@Component
 public class Utils {
+    private Utils() {
+        throw new IllegalStateException("Utility class");
+    }
 
     public static final String SHA_256_ALGORITHM = "SHA-256";
     public static final String HASHLINK_PREFIX = "?hl=";
