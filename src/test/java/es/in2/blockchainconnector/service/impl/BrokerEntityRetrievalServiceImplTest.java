@@ -40,10 +40,8 @@ class BrokerEntityRetrievalServiceImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-
         brokerEntityRetrievalService = new BrokerEntityRetrievalServiceImpl(
-                transactionService,
-                objectMapper);
+                objectMapper, transactionService);
     }
 
     @Test

@@ -11,6 +11,8 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.util.Objects;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -24,12 +26,15 @@ public class BlockchainCreationAndPublicationServiceFacadeImpl implements Blockc
     public Mono<Void> createAndPublishABlockchainEventIntoBlockchainNode(BrokerNotification brokerNotification) {
         String processId = MDC.get("processId");
         return brokerAdapterNotificationService.processNotification(brokerNotification)
-                .doOnSuccess(voidValue -> log.info("ProcessID: {} - Broker Notification processed successfully", processId))
-                .flatMap(onchainEventDTO -> blockchainEventCreationService.createBlockchainEvent(processId, onchainEventDTO))
-                .doOnSuccess(voidValue -> log.info("ProcessID: {} - Blockchain Event created successfully", processId))
-                .flatMap(onchainEvent -> blockchainEventPublicationService.publishBlockchainEventIntoBlockchainNode(processId, onchainEvent))
-                .doOnSuccess(voidValue -> log.info("ProcessID: {} - Blockchain Event published successfully", processId))
+                .filter(Objects::nonNull)
+                .flatMap(onchainEventDTO ->
+                        blockchainEventCreationService.createBlockchainEvent(processId, onchainEventDTO)
+                                .doOnSuccess(voidValue -> log.info("ProcessID: {} - Blockchain Event created successfully", processId))
+                                .flatMap(onchainEvent -> blockchainEventPublicationService.publishBlockchainEventIntoBlockchainNode(processId, onchainEvent))
+                                .doOnSuccess(voidValue -> log.info("ProcessID: {} - Blockchain Event published successfully", processId))
+                )
                 .doOnError(error -> log.error("Error creating or publishing Blockchain Event: {}", error.getMessage(), error));
     }
+
 
 }

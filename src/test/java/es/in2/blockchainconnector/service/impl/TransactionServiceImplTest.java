@@ -10,14 +10,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.MDC;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class TransactionServiceImplTest {
@@ -67,5 +71,55 @@ class TransactionServiceImplTest {
                 .newTransaction(true)
                 .build();
     }
+
+    @Test
+    void saveTransaction_Fail() {
+        // Arrange
+        String processId = "testProcessId";
+        MDC.put("processId", processId);
+
+        Transaction transaction = createSampleTransaction();
+
+        when(transactionRepository.save(any(Transaction.class))).thenReturn(Mono.empty());
+
+        // Act
+        Mono<Transaction> resultMono = service.saveTransaction(transaction);
+
+        // Assert
+        Transaction resultTransaction = resultMono.block();
+        assertEquals(null, resultTransaction);
+
+    }
+
+    @Test
+    void getTransactionShouldReturnTransactions() {
+        String transactionId = "testId";
+        List<Transaction> expectedTransactions = List.of(new Transaction(), new Transaction());
+        when(transactionRepository.findByEntityId(transactionId)).thenReturn(Flux.fromIterable(expectedTransactions));
+
+        Mono<List<Transaction>> result = service.getTransaction(transactionId);
+
+        StepVerifier.create(result)
+                .expectNextMatches(transactions -> transactions.equals(expectedTransactions))
+                .verifyComplete();
+
+        verify(transactionRepository).findByEntityId(transactionId);
+    }
+
+    @Test
+    void getTransactionShouldHandleError() {
+        String transactionId = "testId";
+        when(transactionRepository.findByEntityId(transactionId)).thenReturn(Flux.error(new RuntimeException("Error")));
+
+        Mono<List<Transaction>> result = service.getTransaction(transactionId);
+
+        StepVerifier.create(result)
+                .expectErrorMatches(throwable -> throwable instanceof RuntimeException && throwable.getMessage().equals("Error"))
+                .verify();
+
+        verify(transactionRepository).findByEntityId(transactionId);
+    }
+
+
 }
 

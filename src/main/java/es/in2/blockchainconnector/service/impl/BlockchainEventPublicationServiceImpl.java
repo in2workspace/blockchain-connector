@@ -19,17 +19,14 @@ import reactor.core.publisher.Mono;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLDecoder;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-import static es.in2.blockchainconnector.utils.Utils.APPLICATION_JSON;
-import static es.in2.blockchainconnector.utils.Utils.CONTENT_TYPE;
+import static es.in2.blockchainconnector.utils.Utils.*;
 
 @Slf4j
 @Service
@@ -64,6 +61,23 @@ public class BlockchainEventPublicationServiceImpl implements BlockchainEventPub
                     }
                 })
                 .flatMap(response -> {
+                    if(!hasHLParameter(onChainEvent.dataLocation())) {
+                        Transaction transaction = Transaction.builder()
+                                .id(UUID.randomUUID())
+                                .transactionId(processId)
+                                .createdAt(Timestamp.from(Instant.now()))
+                                .dataLocation(onChainEvent.dataLocation())
+                                .entityId(extractEntityId(onChainEvent.dataLocation()))
+                                .entityType(onChainEvent.eventType())
+                                .entityHash(extractHlValue(onChainEvent.dataLocation()))
+                                .status(TransactionStatus.DELETED)
+                                .trader(TransactionTrader.PRODUCER)
+                                .hash("")
+                                .newTransaction(true)
+                                .build();
+                        log.debug(transaction.toString());
+                        return transactionService.saveTransaction(transaction);
+                    }
                     Transaction transaction = Transaction.builder()
                             .id(UUID.randomUUID())
                             .transactionId(processId)
@@ -82,26 +96,6 @@ public class BlockchainEventPublicationServiceImpl implements BlockchainEventPub
                 })
                 .doOnError(error -> log.error("Error publishing On-Chain Event into Blockchain Node: {}", error.getMessage(), error))
                 .then();
-    }
-
-    public static String extractHlValue(String entityUrl) {
-        try {
-            URI uri = new URI(entityUrl);
-            String query = uri.getQuery();
-            if (query == null) {
-                return "";
-            }
-            String[] params = query.split("&");
-            for (String param : params) {
-                String[] keyValue = param.split("=");
-                if (keyValue.length == 2 && "hl".equals(keyValue[0])) {
-                    return URLDecoder.decode(keyValue[1], StandardCharsets.UTF_8);
-                }
-            }
-        } catch (URISyntaxException e) {
-            throw new BrokerNotificationParserException("Error while extracting hl value from datalocation");
-        }
-        return null;
     }
 
     private static String extractEntityId(String entityUrl) {

@@ -5,7 +5,6 @@ import es.in2.blockchainconnector.domain.DLTNotificationDTO;
 import es.in2.blockchainconnector.domain.Transaction;
 import es.in2.blockchainconnector.domain.TransactionStatus;
 import es.in2.blockchainconnector.domain.TransactionTrader;
-import es.in2.blockchainconnector.exception.HashLinkException;
 import es.in2.blockchainconnector.service.BrokerEntityRetrievalService;
 import es.in2.blockchainconnector.service.TransactionService;
 import lombok.RequiredArgsConstructor;
@@ -13,13 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import static es.in2.blockchainconnector.utils.HttpUtils.getRequest;
@@ -30,8 +25,8 @@ import static es.in2.blockchainconnector.utils.Utils.hasHLParameter;
 @RequiredArgsConstructor
 public class BrokerEntityRetrievalServiceImpl implements BrokerEntityRetrievalService {
 
-    private final TransactionService transactionService;
     private final ObjectMapper objectMapper;
+    private final TransactionService transactionService;
 
     @Override
     public Mono<String> retrieveEntityFromSourceBroker(String processId, DLTNotificationDTO dltNotificationDTO) {
