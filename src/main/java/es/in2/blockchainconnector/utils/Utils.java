@@ -26,10 +26,6 @@ public class Utils {
 
     public static final String HASH_PREFIX = "0x";
 
-    public static boolean isNullOrBlank(String string) {
-        return string == null || string.isBlank();
-    }
-
     public static String calculateSHA256Hash(String data) throws NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance(SHA_256_ALGORITHM);
         byte[] hash = digest.digest(data.getBytes(StandardCharsets.UTF_8));
@@ -78,19 +74,6 @@ public class Utils {
         }
     }
   
-    private static Map<String, String> splitQuery(URL url) {
-        if (url.getQuery() == null || url.getQuery().isEmpty()) {
-            return new HashMap<>();
-        }
-        Map<String, String> queryPairs = new HashMap<>();
-        String[] pairs = url.getQuery().split("&");
-        for (String pair : pairs) {
-            int idx = pair.indexOf("=");
-            queryPairs.put(pair.substring(0, idx), idx > 0 && pair.length() > idx + 1 ? pair.substring(idx + 1) : null);
-        }
-        return queryPairs;
-    }
-
     private static Map<String, String> splitQuery(URL url) {
         if (url.getQuery() == null || url.getQuery().isEmpty()) {
             return new HashMap<>();
