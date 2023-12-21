@@ -3,7 +3,6 @@ package es.in2.blockchainconnector.utils;
 import es.in2.blockchainconnector.exception.BrokerNotificationParserException;
 import es.in2.blockchainconnector.exception.HashLinkException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 import java.net.*;
 import java.nio.charset.StandardCharsets;
@@ -14,7 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-@Component
 public class Utils {
 
     public static final String SHA_256_ALGORITHM = "SHA-256";
@@ -22,13 +20,15 @@ public class Utils {
     public static final String CONTENT_TYPE = "Content-Type";
     public static final String APPLICATION_JSON = "application/json";
     public static final String ACCEPT_HEADER = "Accept";
-
     public static final String HASH_PREFIX = "0x";
+
+    private Utils() {
+        throw new IllegalStateException("Utility class");
+    }
 
     public static boolean isNullOrBlank(String string) {
         return string == null || string.isBlank();
     }
-
 
 
     public static String calculateSHA256Hash(String data) throws NoSuchAlgorithmException {
@@ -91,7 +91,6 @@ public class Utils {
         }
         return queryPairs;
     }
-
 
 
 }

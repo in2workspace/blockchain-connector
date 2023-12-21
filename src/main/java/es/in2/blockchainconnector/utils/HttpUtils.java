@@ -1,21 +1,21 @@
 package es.in2.blockchainconnector.utils;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.concurrent.CompletableFuture;
 
-@Slf4j
-@Component
 public class HttpUtils {
+
+    private HttpUtils() {
+        throw new IllegalStateException("Utility class");
+    }
 
     public static final String CONTENT_TYPE = "Content-Type";
     public static final String APPLICATION_JSON = "application/json";
     public static final String ACCEPT_HEADER = "Accept";
+
     public static String patchRequest(String url, String requestBody) {
         // Create request
         HttpClient client = HttpClient.newHttpClient();
@@ -38,6 +38,7 @@ public class HttpUtils {
         CompletableFuture<HttpResponse<String>> response = client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
         return response.thenApply(HttpResponse::body).join();
     }
+
     public static CompletableFuture<HttpResponse<String>> getRequest(String url) {
         // Create request
         HttpClient client = HttpClient.newHttpClient();
@@ -57,4 +58,5 @@ public class HttpUtils {
         // Send request asynchronously
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
     }
+
 }

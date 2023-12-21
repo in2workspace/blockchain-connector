@@ -2,6 +2,10 @@ package es.in2.blockchainconnector.utils;
 
 public class MessageUtils {
 
+    private MessageUtils() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static final String RESOURCE_NOT_FOUND_MESSAGE = "ProcessId: {}, Resource not found";
     public static final String UNAUTHORIZED_ACCESS_MESSAGE = "ProcessId: {}, Unauthorized access";
     public static final String ACCESS_FORBIDDEN_MESSAGE = "ProcessId: {}, Access forbidden";
