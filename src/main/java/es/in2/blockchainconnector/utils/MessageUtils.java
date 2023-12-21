@@ -1,6 +1,9 @@
 package es.in2.blockchainconnector.utils;
 
 public class MessageUtils {
+    private MessageUtils() {
+        throw new IllegalStateException("Utility class");
+    }
 
     private MessageUtils() {
         throw new IllegalStateException("Utility class");

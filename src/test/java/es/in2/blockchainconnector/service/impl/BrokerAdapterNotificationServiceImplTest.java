@@ -349,4 +349,5 @@ class BrokerAdapterNotificationServiceImplTest {
 
         }
     }
+
 }
