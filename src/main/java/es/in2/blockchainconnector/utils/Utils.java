@@ -14,6 +14,7 @@ import java.util.Map;
 
 @Slf4j
 public class Utils {
+
     private Utils() {
         throw new IllegalStateException("Utility class");
     }
@@ -23,7 +24,6 @@ public class Utils {
     public static final String CONTENT_TYPE = "Content-Type";
     public static final String APPLICATION_JSON = "application/json";
     public static final String ACCEPT_HEADER = "Accept";
-
     public static final String HASH_PREFIX = "0x";
 
     public static String calculateSHA256Hash(String data) throws NoSuchAlgorithmException {
@@ -41,7 +41,6 @@ public class Utils {
         formatter.close();
         return result;
     }
-
 
     public static String extractHlValue(String entityUrl) {
         try {

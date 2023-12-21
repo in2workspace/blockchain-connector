@@ -19,10 +19,8 @@ import reactor.core.publisher.Mono;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLDecoder;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.UUID;
@@ -98,26 +96,6 @@ public class BlockchainEventPublicationServiceImpl implements BlockchainEventPub
                 })
                 .doOnError(error -> log.error("Error publishing On-Chain Event into Blockchain Node: {}", error.getMessage(), error))
                 .then();
-    }
-
-    public static String extractHlValue(String entityUrl) {
-        try {
-            URI uri = new URI(entityUrl);
-            String query = uri.getQuery();
-            if (query == null) {
-                return "";
-            }
-            String[] params = query.split("&");
-            for (String param : params) {
-                String[] keyValue = param.split("=");
-                if (keyValue.length == 2 && "hl".equals(keyValue[0])) {
-                    return URLDecoder.decode(keyValue[1], StandardCharsets.UTF_8);
-                }
-            }
-        } catch (URISyntaxException e) {
-            throw new BrokerNotificationParserException("Error while extracting hl value from datalocation");
-        }
-        return null;
     }
 
     private static String extractEntityId(String entityUrl) {
