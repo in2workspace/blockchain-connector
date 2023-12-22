@@ -1,4 +1,24 @@
-# Blockchain Connector
+<div style="text-align: center;">
+ 
+<h1>Blockchain Connector</h1>
+<span>by </span><a href="https://in2.es">in2.es</a>
+<p><p>
+
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=in2workspace_blockchain-connector&metric=alert_status)](https://sonarcloud.io/dashboard?id=in2workspace_blockchain-connector)
+
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=in2workspace_blockchain-connector&metric=bugs)](https://sonarcloud.io/summary/new_code?id=in2workspace_blockchain-connector)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=in2workspace_blockchain-connector&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=in2workspace_blockchain-connector)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=in2workspace_blockchain-connector&metric=security_rating)](https://sonarcloud.io/dashboard?id=in2workspace_blockchain-connector)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=in2workspace_blockchain-connector&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=in2workspace_blockchain-connector)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=in2workspace_blockchain-connector&metric=ncloc)](https://sonarcloud.io/dashboard?id=in2workspace_blockchain-connector)
+
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=in2workspace_blockchain-connector&metric=coverage)](https://sonarcloud.io/summary/new_code?id=in2workspace_blockchain-connector)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=in2workspace_blockchain-connector&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=in2workspace_blockchain-connector)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=in2workspace_blockchain-connector&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=in2workspace_blockchain-connector)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=in2workspace_blockchain-connector&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=in2workspace_blockchain-connector)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=in2workspace_blockchain-connector&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=in2workspace_blockchain-connector)
+
+</div>
 
 ## Introduction
 The Blockchain Connector serves as a crucial component within the Access Node architecture, facilitating interaction between off-chain storage and on-chain storage. This RESTful API exposes a set of endpoints designed for seamless communication between the Context Broker and Blockchain.
@@ -41,7 +61,7 @@ In the docker-compose.yml file, the definition of services is structured collect
 
 ```yaml
 version: "3.8"
-services: 
+# services: 
 # Following components will be defined here
 ```
 

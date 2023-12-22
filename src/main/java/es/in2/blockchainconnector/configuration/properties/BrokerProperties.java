@@ -19,8 +19,8 @@ public record BrokerProperties(String externalDomain, String internalDomain,
 
     @ConstructorBinding
     public BrokerProperties(String externalDomain, String internalDomain, BrokerPathProperties paths) {
-        this.externalDomain = externalDomain;
-        this.internalDomain = internalDomain;
+        this.externalDomain = Optional.ofNullable(externalDomain).orElse("https://emxample.org/scorpio");
+        this.internalDomain = Optional.ofNullable(internalDomain).orElse("http://localhost:1026");
         this.paths = Optional.ofNullable(paths).orElse(new BrokerPathProperties(null, null));
     }
 

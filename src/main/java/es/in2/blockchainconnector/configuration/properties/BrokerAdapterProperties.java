@@ -17,8 +17,8 @@ public record BrokerAdapterProperties(String domain, @NestedConfigurationPropert
 
     @ConstructorBinding
     public BrokerAdapterProperties(String domain, BrokerAdapterPathProperties paths) {
-        this.domain = domain;
-        this.paths = Optional.ofNullable(paths).orElse(new BrokerAdapterPathProperties(null, null, null, null, null));
+        this.domain = Optional.ofNullable(domain).orElse("http://broker-adapter:8080");
+        this.paths = Optional.ofNullable(paths).orElse(new BrokerAdapterPathProperties(null, null));
     }
 
 }

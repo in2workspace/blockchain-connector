@@ -11,6 +11,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 import static es.in2.blockchainconnector.utils.Utils.calculateSHA256Hash;
+import static es.in2.blockchainconnector.utils.Utils.hasHLParameter;
 
 @Slf4j
 @Service
@@ -20,6 +21,11 @@ public class BrokerEntityValidationServiceImpl implements BrokerEntityValidation
     @Override
     public Mono<String> validateEntityIntegrity(String brokerEntity, DLTNotificationDTO dltNotificationDTO) {
         try {
+            log.debug(" > Validating entity integrity...");
+            if(!hasHLParameter(dltNotificationDTO.dataLocation())) {
+                log.debug(" > Detected deleted entity notification");
+                return Mono.just(brokerEntity);
+            }
             // Create Hash from the retrieved entity
             String entityHash = calculateSHA256Hash(brokerEntity);
             log.debug(" > Entity hash: {}", entityHash);
@@ -36,6 +42,7 @@ public class BrokerEntityValidationServiceImpl implements BrokerEntityValidation
                     .replace(sourceBrokerEntityURL, "")
                     .replace("?hl=", "");
             log.debug(" > Source entity hash: {}", sourceEntityHash);
+            log.debug(" > Extracted Broker entity: {}", brokerEntity);
             // Compare both hashes
             if (entityHash.equals(sourceEntityHash)) {
                 log.debug(" > Entity integrity is valid");

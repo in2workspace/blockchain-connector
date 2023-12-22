@@ -18,8 +18,8 @@ public record BlockchainSubscriptionConfigProperties(String notificationEndpoint
     @ConstructorBinding
     public BlockchainSubscriptionConfigProperties(String notificationEndpoint, boolean active,
                                                   List<String> eventTypes) {
-        this.notificationEndpoint = notificationEndpoint;
-        this.active = active;
+        this.notificationEndpoint = Optional.ofNullable(notificationEndpoint).orElse("http://blockchain-connector-core:8080/notifications/dlt");
+        this.active = Optional.of(active).orElse(false);
         this.eventTypes = Optional.ofNullable(eventTypes).orElse(List.of());
     }
 

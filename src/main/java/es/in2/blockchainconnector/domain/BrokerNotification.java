@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 @Builder
-public record BrokerNotificationDTO(
+public record BrokerNotification(
         @JsonProperty("id") String id,
         @JsonProperty("type") String type,
         @JsonProperty("data") List<Map<String, Object>> data,

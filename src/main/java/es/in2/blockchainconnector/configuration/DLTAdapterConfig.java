@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
 import java.net.CookieManager;
@@ -20,6 +22,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.UUID;
 
 import static es.in2.blockchainconnector.utils.Utils.APPLICATION_JSON;
 import static es.in2.blockchainconnector.utils.Utils.CONTENT_TYPE;
@@ -60,18 +63,19 @@ public class DLTAdapterConfig {
     }
 
     private void createBlockchainNodeConfiguration() {
-        log.info(">>> Creating blockchain node configuration...");
+        String processId = UUID.randomUUID().toString();
+        log.info("ProcessID: {} - Creating blockchain node configuration...", processId);
         try {
             String url = dltAdapterProperties.domain() + dltAdapterProperties.paths().configureNode();
-            log.debug(" > Blockchain Node Configuration url: {}", url);
+            log.debug("ProcessID: {} - Blockchain Node Configuration url: {}", processId, url);
             BlockchainNodeDTO blockchainNodeDTO = new BlockchainNodeDTO(
                     blockchainProperties.rpcAddress(),
                     blockchainProperties.userEthereumAddress(),
                     applicationConfig.organizationIdHash());
             String body = objectMapper.writer().writeValueAsString(blockchainNodeDTO);
-            log.debug(" > Blockchain Node Configuration: {}", body);
-            requestCall(URI.create(url), body);
-            log.info(" > Blockchain node configuration created.");
+            log.debug("ProcessID: {} - Blockchain Node Configuration: {}", processId, body);
+            requestCall(processId, URI.create(url), body);
+            log.info("ProcessID: {} - Blockchain node configuration created.", processId);
         } catch (JsonProcessingException e) {
             throw new BlockchainNodeSubscriptionException("Error creating blockchain node configuration: " + e.getMessage());
         }
@@ -90,24 +94,25 @@ public class DLTAdapterConfig {
     }
 
     private void createEventSubscriptionToDLTAdapter() {
-        log.info(">>> Creating default subscription to blockchain node interface...");
+        String processId = UUID.randomUUID().toString();
+        log.info("ProcessID: {} - Creating default subscription to blockchain node interface...", processId);
         try {
             String url = dltAdapterProperties.domain() + dltAdapterProperties.paths().subscribe();
-            log.debug(" > Blockchain Node I/F Subscription url: {}", url);
+            log.debug("ProcessID: {} - Blockchain Node I/F Subscription url: {}", processId, url);
             BlockchainNodeSubscriptionDTO blockchainNodeSubscriptionDTO = BlockchainNodeSubscriptionDTO.builder()
                     .eventTypeList(blockchainProperties.subscription().eventTypes())
                     .notificationEndpoint(blockchainProperties.subscription().notificationEndpoint())
                     .build();
             String body = objectMapper.writer().writeValueAsString(blockchainNodeSubscriptionDTO);
-            log.debug(" > Blockchain Node I/F Subscription body: {}", body);
-            requestCall(URI.create(url), body);
-            log.info(" > Subscriptions configuration created.");
+            log.debug("ProcessID: {} - Blockchain Node I/F Subscription body: {}", processId, body);
+            requestCall(processId, URI.create(url), body);
+            log.info("ProcessID: {} - Subscriptions configuration created.", processId);
         } catch (JsonProcessingException e) {
             throw new BlockchainNodeSubscriptionException("Error creating default subscription: " + e.getMessage());
         }
     }
 
-    private void requestCall(URI url, String body) {
+    private void requestCall(String processId, URI url, String body) {
         HttpClient httpClient = dltAdapterHttpClient();
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(url)
@@ -117,7 +122,7 @@ public class DLTAdapterConfig {
         HttpResponse<String> response;
         try {
             response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-            log.debug(" > Response: {}", response.statusCode() + ": " + response.body());
+            log.debug("ProcessID: {} - Response: {}", processId, response.statusCode() + ": " + response.body());
         } catch (IOException | InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RequestErrorException("Error sending request to blockchain node: " + e.getMessage());
