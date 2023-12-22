@@ -1,4 +1,4 @@
-<div style="text-align: center;">
+<div align="center">
  
 <h1>Blockchain Connector</h1>
 <span>by </span><a href="https://in2.es">in2.es</a>
