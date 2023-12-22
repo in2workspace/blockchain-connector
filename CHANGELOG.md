@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v2.0.0] - Unreleased
+## [v2.0.0](https://github.com/in2workspace/blockchain-connector/releases/tag/v2.0.0) - 2023-12-22
 ### Added
 - Add GitHub Actions for CI/CD
 - Add SonarCloud for code quality
@@ -12,8 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Modified
 - Update build.gradle to export project version.
 - Update Dockerfile to automatically set the version number as a build arg and label.
+- Fix the bug in the notification process.
 
-## [v1.0.0] - 2023-11-21
+## [v1.0.0](https://github.com/in2workspace/blockchain-connector/releases/tag/v1.0.0) - 2023-11-21
 
 ### Added
 - Configure Blockchain Node
@@ -32,9 +33,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Broker Entity Update
 - Broker Entity Deletion
 - Auditing Service
-
-
-
-[release]:
-
-[1.0.0]: 

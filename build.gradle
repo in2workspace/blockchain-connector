@@ -33,9 +33,16 @@ checkstyleTest {
 
 sonar {
 	properties {
+		property "sonar.projectName", "Blockchain Connector"
 		property "sonar.projectKey", "in2workspace_blockchain-connector"
 		property "sonar.organization", "in2workspace"
 		property "sonar.host.url", "https://sonarcloud.io"
+		property "sonar.coverage.exclusions",
+				"src/main/java/es/in2/blockchainconnector/BlockchainConnectorApplication.java, " +
+				"src/main/java/es/in2/blockchainconnector/configuration/**, " +
+				"src/main/java/es/in2/blockchainconnector/domain/**, " +
+				"src/main/java/es/in2/blockchainconnector/exception/**, " +
+				"src/main/java/es/in2/blockchainconnector/repository/**"
 	}
 }
 
