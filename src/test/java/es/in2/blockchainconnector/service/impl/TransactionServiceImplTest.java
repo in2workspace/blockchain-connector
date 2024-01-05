@@ -120,6 +120,26 @@ class TransactionServiceImplTest {
         verify(transactionRepository).findByEntityId(transactionId);
     }
 
+    @Test
+    void getAllTransactionsShouldReturnAllTransactions() {
+        // Arrange
+        List<Transaction> expectedTransactions = List.of(
+                createSampleTransaction(),
+                createSampleTransaction()
+        );
+        when(transactionRepository.findAll()).thenReturn(Flux.fromIterable(expectedTransactions));
+
+        // Act
+        Flux<Transaction> resultFlux = service.getAllTransactions();
+
+        // Assert
+        StepVerifier.create(resultFlux)
+                .expectNextSequence(expectedTransactions)
+                .verifyComplete();
+
+        verify(transactionRepository).findAll();
+    }
+
 
 }
 
