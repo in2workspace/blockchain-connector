@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -32,6 +33,13 @@ public class TransactionServiceImpl implements TransactionService {
         log.debug("ProcessID: {} - Getting transactions with id: {}", processIdc, transactionId);
         return transactionRepository.findByEntityId(transactionId)
                 .collectList();
+    }
+
+    @Override
+    public Flux<Transaction> getAllTransactions() {
+        String processIdc = MDC.get("processId");
+        log.debug("ProcessID: {} - Getting all transactions", processIdc);
+        return transactionRepository.findAll();
     }
 
 

@@ -11,13 +11,14 @@ import java.util.Optional;
  * @param publish - publish path
  * @param subscribe - subscribe path
  */
-public record DLTAdapterPathProperties(String configureNode, String publish, String subscribe) {
+public record DLTAdapterPathProperties(String configureNode, String publish, String subscribe, String events) {
 
     @ConstructorBinding
-    public DLTAdapterPathProperties(String configureNode, String publish, String subscribe) {
+    public DLTAdapterPathProperties(String configureNode, String publish, String subscribe, String events) {
         this.configureNode = Optional.ofNullable(configureNode).orElse("/api/v1/configureNode");
         this.publish = Optional.ofNullable(publish).orElse("/api/v1/publishEvent");
         this.subscribe = Optional.ofNullable(subscribe).orElse("/api/v1/subscribe");
+        this.events = Optional.ofNullable(events).orElse("/api/v1/events");
     }
 
 }

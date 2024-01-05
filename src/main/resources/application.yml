@@ -98,11 +98,6 @@ broker:
   externalDomain:
   internalDomain:
 
-# NGSI Subscription Configuration
-ngsi-subscription:
-  notificationEndpoint:
-  entityTypes:
-
 # Broker Adapter Configuration
 broker-adapter:
   domain:

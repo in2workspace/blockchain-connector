@@ -23,7 +23,6 @@ public class ApplicationConfig {
     private final DLTAdapterProperties dltAdapterProperties;
     private final BrokerProperties brokerProperties;
     private final BrokerAdapterProperties brokerAdapterProperties;
-    private final NgsiLdSubscriptionConfigProperties ngsiLdSubscriptionConfigProperties;
 
     @PostConstruct
     public void init() {
@@ -33,7 +32,6 @@ public class ApplicationConfig {
         log.debug("DLT adapter properties: {}", dltAdapterProperties);
         log.debug("Broker properties: {}", brokerProperties);
         log.debug("Broker adapter properties: {}", brokerAdapterProperties);
-        log.debug("NgsiLdSubscriptionConfigProperties properties: {}", ngsiLdSubscriptionConfigProperties);
     }
 
     @Bean
