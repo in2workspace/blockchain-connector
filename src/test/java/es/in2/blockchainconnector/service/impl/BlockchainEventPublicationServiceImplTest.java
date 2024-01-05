@@ -55,7 +55,7 @@ class BlockchainEventPublicationServiceImplTest {
             try (MockedStatic<HttpClient> httpUtilsMockedStatic = Mockito.mockStatic(HttpClient.class)) {
                 when(Utils.hasHLParameter(anyString())).thenReturn(false);
                 when(dltAdapterProperties.domain()).thenReturn("http://example.com");
-                when(dltAdapterProperties.paths()).thenReturn(new DLTAdapterProperties("http://dlt-adapter:8080", new DLTAdapterPathProperties("/configureNode", "/publish", "/subscribe")).paths());
+                when(dltAdapterProperties.paths()).thenReturn(new DLTAdapterProperties("http://dlt-adapter:8080", new DLTAdapterPathProperties("/configureNode", "/publish", "/subscribe", "")).paths());
                 when(objectMapper.writeValueAsString(onChainEvent)).thenReturn("json");
                 when(dltAdapterConfig.dltAdapterHttpClient()).thenReturn(httpClient);
                 Transaction mockTransaction = new Transaction();
