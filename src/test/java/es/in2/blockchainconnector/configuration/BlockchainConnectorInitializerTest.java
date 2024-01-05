@@ -1,38 +1,35 @@
 package es.in2.blockchainconnector.configuration;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
-
 import es.in2.blockchainconnector.configuration.properties.DLTAdapterPathProperties;
 import es.in2.blockchainconnector.configuration.properties.DLTAdapterProperties;
 import es.in2.blockchainconnector.domain.Transaction;
 import es.in2.blockchainconnector.domain.TransactionTrader;
 import es.in2.blockchainconnector.service.TransactionService;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Flux;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.List;
 
-@ExtendWith(MockitoExtension.class)
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 class BlockchainConnectorInitializerTest {
 
-    @Mock
     private TransactionService transactionService;
-
-    @Mock
     private DLTAdapterProperties dltAdapterProperties;
-
     private BlockchainConnectorInitializer initializer;
 
     @BeforeEach
     void setUp() {
+        // Manual mock initialization
+        transactionService = Mockito.mock(TransactionService.class);
+        dltAdapterProperties = Mockito.mock(DLTAdapterProperties.class);
         initializer = new BlockchainConnectorInitializer(transactionService, dltAdapterProperties);
     }
 
@@ -68,6 +65,6 @@ class BlockchainConnectorInitializerTest {
 
         // Assert
         verify(transactionService).getAllTransactions();
-        // Additional assertions to verify that queryDLTAdapterFromBeginning is called
     }
 }
+
